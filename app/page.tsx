@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
+const REQUIRED_ACCESS_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN || 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2'
+
 interface Submission {
   id: string
   giftType: string
@@ -20,6 +22,7 @@ export default function FormPage() {
   const searchParams = useSearchParams()
   
   // Get params from URL (passed from main app)
+  const [accessToken] = useState(searchParams.get('token') || '')
   const [userId] = useState(searchParams.get('userId') || '')
   const [userName] = useState(searchParams.get('userName') || '')
   const [userEmail] = useState(searchParams.get('userEmail') || '')
@@ -120,6 +123,29 @@ export default function FormPage() {
   const handleCancelReview = () => {
     setShowReview(false)
     setError('')
+  }
+
+  // Validate access token first
+  if (!accessToken || accessToken !== REQUIRED_ACCESS_TOKEN) {
+    return (
+      <div className="container">
+        <div className="card" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</div>
+          <h2 style={{ color: '#e53e3e' }}>Access Denied</h2>
+          <p style={{ marginTop: '1rem', marginBottom: '2rem' }}>
+            This application can only be accessed through the authorized company portal.
+          </p>
+          <div style={{ background: '#fff5f5', padding: '1rem', borderRadius: '8px', border: '1px solid #feb2b2' }}>
+            <p style={{ color: '#742a2a', fontSize: '0.875rem' }}>
+              <strong>Error:</strong> Invalid or missing access token
+            </p>
+            <p style={{ color: '#742a2a', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+              Please contact your system administrator if you believe this is an error.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (!userId || !userName) {

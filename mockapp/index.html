@@ -483,8 +483,8 @@
                     <input 
                         type="text" 
                         id="giftSystemUrl" 
-                        placeholder="http://localhost:3000"
-                        value="http://localhost:3000"
+                        placeholder="https://instant-jeanmarie-mariadassous-projects.vercel.app"
+                        value="https://instant-jeanmarie-mariadassous-projects.vercel.app"
                     >
                     <small>Change this to your deployed Vercel URL when ready (e.g., https://your-app.vercel.app)</small>
                 </div>
@@ -547,8 +547,8 @@
                         <input 
                             type="text" 
                             id="adminSystemUrl" 
-                            placeholder="http://localhost:3000/admin"
-                            value="http://localhost:3000/admin"
+                            placeholder="https://instant-jeanmarie-mariadassous-projects.vercel.app/admin"
+                            value="https://instant-jeanmarie-mariadassous-projects.vercel.app/admin"
                         >
                         <small>Change this to your deployed admin URL when ready</small>
                     </div>
@@ -720,9 +720,13 @@
             window.open(url, '_blank');
         });
 
+        // Access token for secure access to gift system
+        const ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2';
+
         // Build gift request URL with parameters
         function buildGiftRequestUrl(baseUrl) {
             const params = new URLSearchParams({
+                token: ACCESS_TOKEN,
                 userId: userData.userId,
                 userName: userData.userName,
                 userEmail: userData.userEmail
@@ -742,6 +746,7 @@
         // Build my submissions URL
         function buildMySubmissionsUrl(baseUrl) {
             const params = new URLSearchParams({
+                token: ACCESS_TOKEN,
                 userId: userData.userId,
                 userName: userData.userName,
                 userEmail: userData.userEmail
