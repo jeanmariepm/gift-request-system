@@ -16,13 +16,7 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' }
     })
     
-    // Parse readOnlyData back to JSON
-    const submissionsWithParsedData = submissions.map(sub => ({
-      ...sub,
-      readOnlyData: JSON.parse(sub.readOnlyData as string)
-    }))
-    
-    return NextResponse.json({ submissions: submissionsWithParsedData })
+    return NextResponse.json({ submissions })
   } catch (error) {
     console.error('Error fetching submissions:', error)
     return NextResponse.json({ error: 'Failed to fetch submissions' }, { status: 500 })
@@ -48,7 +42,7 @@ export async function POST(request: NextRequest) {
         userId,
         userName,
         userEmail: finalUserEmail,
-        readOnlyData: JSON.stringify(readOnlyData || {}),
+        readOnlyData: readOnlyData || {},
         giftType,
         recipientUsername,
         recipientName,

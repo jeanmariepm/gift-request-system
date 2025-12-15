@@ -5,7 +5,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -16,7 +16,7 @@ model Submission {
   userEmail String   // User email passed from main app
   
   // Read-only fields from main app
-  readOnlyData String @default("{}") // JSON stored as string for SQLite compatibility
+  readOnlyData Json   // Flexible JSON field for any data passed from main app
   
   // User inputs
   giftType          String
