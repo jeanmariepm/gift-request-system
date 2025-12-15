@@ -1,0 +1,39 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Submission {
+  id        String   @id @default(cuid())
+  userId    String   // User ID from the main app
+  userName  String   // User name passed from main app
+  userEmail String   // User email passed from main app
+  
+  // Read-only fields from main app
+  readOnlyData String @default("{}") // JSON stored as string for SQLite compatibility
+  
+  // User inputs
+  giftType          String
+  recipientUsername String
+  recipientName     String
+  message           String?
+  
+  // Status tracking
+  status       String   @default("Pending") // "Pending" or "Processed"
+  
+  // Timestamps
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  processedAt  DateTime?
+  processedBy  String?  // Admin username who processed it
+  
+  @@index([userId])
+  @@index([status])
+}
+
