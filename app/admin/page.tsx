@@ -15,19 +15,15 @@ export default function AdminLoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [accessDenied, setAccessDenied] = useState(false)
 
-  // Check access token
+  // Check access token and auto-login
   useEffect(() => {
     const token = searchParams.get('token')
     if (!token || token !== REQUIRED_ACCESS_TOKEN) {
       setAccessDenied(true)
       return
     }
-  }, [searchParams])
 
-  // Auto-login if credentials passed via URL (for mock app integration)
-  useEffect(() => {
-    if (accessDenied) return
-    
+    // Auto-login if credentials passed via URL (for mock app integration)
     const autoLogin = searchParams.get('auto')
     const urlUsername = searchParams.get('u')
     const urlPassword = searchParams.get('p')
@@ -35,10 +31,11 @@ export default function AdminLoginPage() {
     if (autoLogin === 'true' && urlUsername && urlPassword) {
       setUsername(urlUsername)
       setPassword(urlPassword)
+      setIsLoading(true)
       // Automatically submit login
       performLogin(urlUsername, urlPassword)
     }
-  }, [searchParams, accessDenied])
+  }, [searchParams])
 
   const performLogin = async (user: string, pass: string) => {
     setError('')
@@ -86,18 +83,29 @@ export default function AdminLoginPage() {
     )
   }
 
+  // If auto-login is happening, show loading screen instead of form
+  if (isLoading && searchParams.get('auto') === 'true') {
+    return (
+      <div className="container">
+        <div className="card" style={{ maxWidth: '500px', margin: '2rem auto', textAlign: 'center' }}>
+          <h1 style={{ marginBottom: '1rem' }}>🔓 Logging you in...</h1>
+          <p style={{ color: '#718096', marginBottom: '1.5rem' }}>
+            Please wait while we authenticate your access.
+          </p>
+          <div style={{ margin: '2rem 0' }}>
+            <div className="spinner" style={{ margin: '0 auto' }}></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="container">
       <h1>🔐 Admin Login</h1>
       
       <div className="card" style={{ maxWidth: '500px', margin: '0 auto' }}>
         <h2>Administrator Access</h2>
-        
-        {isLoading && searchParams.get('auto') === 'true' && (
-          <div className="alert alert-info">
-            Logging you in automatically...
-          </div>
-        )}
         
         {error && (
           <div className="alert alert-error">
