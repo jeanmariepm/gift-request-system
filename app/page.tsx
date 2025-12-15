@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-const REQUIRED_ACCESS_TOKEN = process.env.NEXT_PUBLIC_ACCESS_TOKEN || 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2'
+const REQUIRED_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2'
 
 interface Submission {
   id: string
