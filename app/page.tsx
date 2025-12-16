@@ -37,7 +37,6 @@ export default function FormPage() {
   
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showReview, setShowReview] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [error, setError] = useState('')
@@ -103,7 +102,6 @@ export default function FormPage() {
         throw new Error(data.error || 'Failed to submit form')
       }
       
-      setShowReview(false)
       setShowConfirmation(true)
       setShowForm(false)
       // Reset form
@@ -120,10 +118,6 @@ export default function FormPage() {
     }
   }
 
-  const handleCancelReview = () => {
-    setShowReview(false)
-    setError('')
-  }
 
   // Validate access token first
   if (!accessToken || accessToken !== REQUIRED_ACCESS_TOKEN) {
@@ -163,7 +157,7 @@ export default function FormPage() {
   }
 
   // If showing form, render the form
-  if (showForm && !showReview && !showConfirmation) {
+  if (showForm && !showConfirmation) {
     return (
       <div className="container">
         <h1>🎁 Gift Request Form</h1>
@@ -274,80 +268,6 @@ export default function FormPage() {
               </button>
             </div>
           </form>
-        </div>
-      </div>
-    )
-  }
-
-  if (showReview) {
-    return (
-      <div className="container">
-        <h1>🔍 Review Your Request</h1>
-        
-        <div className="card">
-          <h2>Please Review Your Information</h2>
-          <p className="subtitle">Please confirm all details are correct before submitting</p>
-
-          {error && (
-            <div className="alert alert-error">
-              {error}
-            </div>
-          )}
-
-          {/* User Information */}
-          <div className="read-only-section">
-            <h3>Your Information</h3>
-            <div className="read-only-item">
-              <strong>Name:</strong> {userName}
-            </div>
-            <div className="read-only-item">
-              <strong>Email:</strong> {userEmail}
-            </div>
-            {companyName && (
-              <div className="read-only-item">
-                <strong>Company:</strong> {companyName}
-              </div>
-            )}
-            {department && (
-              <div className="read-only-item">
-                <strong>Department:</strong> {department}
-              </div>
-            )}
-          </div>
-
-          {/* Gift Request Details */}
-          <div className="read-only-section">
-            <h3>Gift Request Details</h3>
-            <div className="read-only-item">
-              <strong>Gift Duration:</strong> {giftType}
-            </div>
-            <div className="read-only-item">
-              <strong>Recipient Username:</strong> {recipientUsername}
-            </div>
-            <div className="read-only-item">
-              <strong>Recipient Full Name:</strong> {recipientName}
-            </div>
-            <div className="read-only-item">
-              <strong>Message:</strong> {message || 'No message'}
-            </div>
-          </div>
-
-          <div className="btn-group">
-            <button 
-              onClick={handleConfirmSubmit}
-              className="btn btn-primary"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Submitting...' : '✓ Confirm and Submit'}
-            </button>
-            <button 
-              onClick={handleCancelReview}
-              className="btn btn-secondary"
-              disabled={isSubmitting}
-            >
-              ← Go Back to Edit
-            </button>
-          </div>
         </div>
       </div>
     )
