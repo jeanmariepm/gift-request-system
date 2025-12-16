@@ -167,19 +167,6 @@ export default function FormPage() {
         <h1 className="page-title">Gift Request Form</h1>
         
         <div className="card">
-          {/* Read-only section */}
-          <div className="read-only-section">
-            <h3>Your Information</h3>
-            <div className="read-only-item">
-              <strong>Name:</strong> {userName}
-            </div>
-            <div className="read-only-item">
-              <strong>Email:</strong> {userEmail}
-            </div>
-          </div>
-
-          <h2>Gift Request Details</h2>
-          
           {error && (
             <div className="alert alert-error">
               {error}
