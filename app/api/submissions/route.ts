@@ -35,8 +35,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { userId, userName, userEmail, giftType, recipientUsername, recipientName, recipientEmail, message, env } = body
     
-    // Validate required fields
-    if (!userId || !userName || !giftType || !recipientUsername || !recipientName) {
+    // Validate required fields (recipientUsername is now optional)
+    if (!userId || !userName || !giftType || !recipientName) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
     
@@ -52,10 +52,10 @@ export async function POST(request: NextRequest) {
         userId,
         userName,
         userEmail: finalUserEmail,
-        giftType,
-        recipientUsername,
         recipientName,
         recipientEmail: recipientEmail || null,
+        recipientUsername: recipientUsername || null,
+        giftType,
         message: message || null,
         status: 'Pending'
       }

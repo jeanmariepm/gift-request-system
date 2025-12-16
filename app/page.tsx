@@ -197,33 +197,6 @@ export default function FormPage() {
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="giftType">Gift Duration *</label>
-              <select
-                id="giftType"
-                value={giftType}
-                onChange={(e) => setGiftType(e.target.value)}
-                required
-              >
-                <option value="">Select duration</option>
-                <option value="One Month">One Month</option>
-                <option value="Two Months">Two Months</option>
-                <option value="Three Months">Three Months</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="recipientUsername">Recipient Username *</label>
-              <input
-                type="text"
-                id="recipientUsername"
-                value={recipientUsername}
-                onChange={(e) => setRecipientUsername(e.target.value)}
-                placeholder="Enter recipient's username"
-                required
-              />
-            </div>
-
-            <div className="form-group">
               <label htmlFor="recipientName">Recipient Full Name *</label>
               <input
                 type="text"
@@ -244,6 +217,32 @@ export default function FormPage() {
                 onChange={(e) => setRecipientEmail(e.target.value)}
                 placeholder="Enter recipient's email (optional)"
               />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="recipientUsername">Recipient Username</label>
+              <input
+                type="text"
+                id="recipientUsername"
+                value={recipientUsername}
+                onChange={(e) => setRecipientUsername(e.target.value)}
+                placeholder="Enter recipient's username (optional)"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="giftType">Gift Duration *</label>
+              <select
+                id="giftType"
+                value={giftType}
+                onChange={(e) => setGiftType(e.target.value)}
+                required
+              >
+                <option value="">Select duration</option>
+                <option value="One Month">One Month</option>
+                <option value="Two Months">Two Months</option>
+                <option value="Three Months">Three Months</option>
+              </select>
             </div>
 
             <div className="form-group">
