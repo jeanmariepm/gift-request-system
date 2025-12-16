@@ -6,12 +6,17 @@ import { getDatabaseUrl } from '@/lib/db-selector'
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const userId = searchParams.get('userId')
+  const env = searchParams.get('env')
   
   if (!userId) {
     return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
   }
   
   try {
+    // Get appropriate database based on environment
+    const dbUrl = getDatabaseUrl(env)
+    const prisma = getPrismaClient(dbUrl)
+    
     const submissions = await prisma.submission.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' }
@@ -28,7 +33,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { userId, userName, userEmail, readOnlyData, giftType, recipientUsername, recipientName, message } = body
+    const { userId, userName, userEmail, readOnlyData, giftType, recipientUsername, recipientName, message, env } = body
     
     // Validate required fields
     if (!userId || !userName || !giftType || !recipientUsername || !recipientName) {
@@ -37,6 +42,10 @@ export async function POST(request: NextRequest) {
     
     // Use a default email if not provided
     const finalUserEmail = userEmail || `${userId}@company.com`
+    
+    // Get appropriate database based on environment
+    const dbUrl = getDatabaseUrl(env)
+    const prisma = getPrismaClient(dbUrl)
     
     const submission = await prisma.submission.create({
       data: {
