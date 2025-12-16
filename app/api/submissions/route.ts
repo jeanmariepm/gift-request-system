@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { userId, userName, userEmail, readOnlyData, giftType, recipientUsername, recipientName, message, env } = body
+    const { userId, userName, userEmail, giftType, recipientUsername, recipientName, message, env } = body
     
     // Validate required fields
     if (!userId || !userName || !giftType || !recipientUsername || !recipientName) {
@@ -52,7 +52,6 @@ export async function POST(request: NextRequest) {
         userId,
         userName,
         userEmail: finalUserEmail,
-        readOnlyData: readOnlyData || {},
         giftType,
         recipientUsername,
         recipientName,

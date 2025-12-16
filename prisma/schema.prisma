@@ -15,9 +15,6 @@ model Submission {
   userName  String   // User name passed from main app
   userEmail String   // User email passed from main app
   
-  // Read-only fields from main app
-  readOnlyData Json   // Flexible JSON field for any data passed from main app
-  
   // User inputs
   giftType          String
   recipientUsername String

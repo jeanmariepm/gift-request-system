@@ -428,30 +428,6 @@
                     >
                 </div>
 
-                <div class="form-group">
-                    <label for="companyName">Company Name</label>
-                    <input 
-                        type="text" 
-                        id="companyName" 
-                        placeholder="e.g., Acme Corporation"
-                        value="Acme Corporation"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="department">Department</label>
-                    <select id="department">
-                        <option value="">Select Department</option>
-                        <option value="Engineering" selected>Engineering</option>
-                        <option value="Sales">Sales</option>
-                        <option value="Marketing">Marketing</option>
-                        <option value="HR">Human Resources</option>
-                        <option value="Finance">Finance</option>
-                        <option value="Operations">Operations</option>
-                        <option value="IT">Information Technology</option>
-                    </select>
-                </div>
-
                 <button type="submit" class="btn btn-primary">
                     Proceed to Gifts App →
                 </button>
@@ -640,9 +616,7 @@
         let userData = {
             userId: '',
             userName: '',
-            userEmail: '',
-            companyName: '',
-            department: ''
+            userEmail: ''
         };
 
         // Load user data if exists
@@ -652,8 +626,6 @@
             document.getElementById('userId').value = userData.userId || '';
             document.getElementById('userName').value = userData.userName || '';
             document.getElementById('userEmail').value = userData.userEmail || '';
-            document.getElementById('companyName').value = userData.companyName || '';
-            document.getElementById('department').value = userData.department || '';
         }
 
         // Add URL preview on hover for admin button
@@ -681,9 +653,7 @@
                 const tempUserData = {
                     userId: document.getElementById('userId').value || 'your-id',
                     userName: document.getElementById('userName').value || 'your-name',
-                    userEmail: document.getElementById('userEmail').value || 'email@company.com',
-                    companyName: document.getElementById('companyName').value,
-                    department: document.getElementById('department').value
+                    userEmail: document.getElementById('userEmail').value || 'email@company.com'
                 };
                 
                 const params = new URLSearchParams({
@@ -693,8 +663,6 @@
                     userName: tempUserData.userName,
                     userEmail: tempUserData.userEmail
                 });
-                if (tempUserData.companyName) params.append('companyName', tempUserData.companyName);
-                if (tempUserData.department) params.append('department', tempUserData.department);
                 
                 const previewUrl = `${VERCEL_URL}/?${params.toString()}`;
                 this.setAttribute('title', previewUrl);
@@ -709,9 +677,7 @@
             userData = {
                 userId: document.getElementById('userId').value,
                 userName: document.getElementById('userName').value,
-                userEmail: document.getElementById('userEmail').value || `${document.getElementById('userId').value}@company.com`,
-                companyName: document.getElementById('companyName').value,
-                department: document.getElementById('department').value
+                userEmail: document.getElementById('userEmail').value || `${document.getElementById('userId').value}@company.com`
             };
 
             // Store in localStorage
@@ -753,14 +719,6 @@
                 userName: userData.userName,
                 userEmail: userData.userEmail
             });
-
-            // Add optional parameters if they exist
-            if (userData.companyName) {
-                params.append('companyName', userData.companyName);
-            }
-            if (userData.department) {
-                params.append('department', userData.department);
-            }
 
             return `${VERCEL_URL}/?${params.toString()}`;
         }

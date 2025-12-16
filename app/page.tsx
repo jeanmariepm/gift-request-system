@@ -26,8 +26,6 @@ export default function FormPage() {
   const [userId] = useState(searchParams.get('userId') || '')
   const [userName] = useState(searchParams.get('userName') || '')
   const [userEmail] = useState(searchParams.get('userEmail') || '')
-  const [companyName] = useState(searchParams.get('companyName') || '')
-  const [department] = useState(searchParams.get('department') || '')
   
   // Form inputs
   const [giftType, setGiftType] = useState('')
@@ -88,7 +86,6 @@ export default function FormPage() {
           userId,
           userName,
           userEmail,
-          readOnlyData: { companyName, department },
           giftType,
           recipientUsername,
           recipientName,
@@ -180,16 +177,6 @@ export default function FormPage() {
             <div className="read-only-item">
               <strong>Email:</strong> {userEmail}
             </div>
-            {companyName && (
-              <div className="read-only-item">
-                <strong>Company:</strong> {companyName}
-              </div>
-            )}
-            {department && (
-              <div className="read-only-item">
-                <strong>Department:</strong> {department}
-              </div>
-            )}
           </div>
 
           <h2>Gift Request Details</h2>
