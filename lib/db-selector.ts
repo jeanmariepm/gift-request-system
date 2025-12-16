@@ -5,10 +5,11 @@ export function getDatabaseUrl(envParam?: string | null): string {
   
   // Get the appropriate database URL from environment variables
   const dbUrl = env === 'development' 
-    ? process.env.DATABASE_URL_DEV 
-    : process.env.DATABASE_URL_PROD;
+    ? process.env.DATABASE_URL_DEV   // Development database
+    : process.env.DATABASE_URL;       // Production database (existing)
   
-  // Fallback to single DATABASE_URL if specific ones aren't set
-  return dbUrl || process.env.DATABASE_URL || '';
+  console.log(`🗄️ Using ${env} database:`, dbUrl ? dbUrl.substring(0, 30) + '...' : 'not configured');
+  
+  return dbUrl || '';
 }
 
