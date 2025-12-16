@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { getPrismaClient } from '@/lib/prisma'
+import { getDatabaseUrl } from '@/lib/db-selector'
 
 // GET - Fetch user's submissions
 export async function GET(request: NextRequest) {
