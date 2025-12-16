@@ -167,15 +167,6 @@ export default function FormPage() {
         <h1 className="page-title">Gift Request Form</h1>
         
         <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-            <button 
-              onClick={() => window.close()}
-              className="btn btn-secondary"
-            >
-              Close
-            </button>
-          </div>
-
           {/* Read-only section */}
           <div className="read-only-section">
             <h3>Your Information</h3>
