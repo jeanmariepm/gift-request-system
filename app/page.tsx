@@ -73,11 +73,11 @@ export default function FormPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    // Show review page instead of submitting immediately
-    setShowReview(true)
+    // Submit directly without review page
+    await submitForm()
   }
 
-  const handleConfirmSubmit = async () => {
+  const submitForm = async () => {
     setError('')
     setIsSubmitting(true)
     
@@ -261,8 +261,9 @@ export default function FormPage() {
               <button 
                 type="submit" 
                 className="btn btn-primary"
+                disabled={isSubmitting}
               >
-                Review Request →
+                {isSubmitting ? 'Submitting...' : 'Submit Request'}
               </button>
               <button 
                 type="button"
