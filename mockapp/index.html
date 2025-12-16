@@ -444,20 +444,6 @@
                     Log In to Portal
                 </button>
             </form>
-
-            <!-- Quick Links (shown after login) -->
-            <div id="quickLinks" class="quick-links" style="display: none;">
-                <h3>📋 Quick Actions</h3>
-                <button id="giftRequestBtn" class="btn btn-success">
-                    🎁 Submit Gift Request
-                </button>
-                <a href="#" id="mySubmissionsLink" class="link-button">
-                    📊 View My Gift Requests
-                </a>
-                <button onclick="logout()" class="link-button" style="text-align: center; cursor: pointer; border: none; width: 100%;">
-                    🚪 Logout
-                </button>
-            </div>
             </div>
         </div>
 
@@ -642,10 +628,15 @@
             department: ''
         };
 
-        // Check if user is already logged in (for simulator)
+        // Load user data if exists
         if (localStorage.getItem('mockAppUser')) {
             userData = JSON.parse(localStorage.getItem('mockAppUser'));
-            showLoggedInState();
+            // Pre-fill form fields
+            document.getElementById('userId').value = userData.userId || '';
+            document.getElementById('userName').value = userData.userName || '';
+            document.getElementById('userEmail').value = userData.userEmail || '';
+            document.getElementById('companyName').value = userData.companyName || '';
+            document.getElementById('department').value = userData.department || '';
         }
 
         // Handle admin login button click
@@ -658,7 +649,7 @@
             window.open(adminUrl, '_blank');
         });
 
-        // Handle form submission
+        // Handle form submission - directly open gift request system
         document.getElementById('userForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -674,48 +665,14 @@
             // Store in localStorage
             localStorage.setItem('mockAppUser', JSON.stringify(userData));
 
-            // Show logged in state
-            showLoggedInState();
+            // Directly open gift request system
+            const url = buildGiftRequestUrl(GIFT_SYSTEM_URL);
+            window.open(url, '_blank');
         });
 
-        function showLoggedInState() {
-            // Hide form
-            document.getElementById('userForm').style.display = 'none';
-            
-            // Show quick links directly (skip user info display)
-            document.getElementById('quickLinks').style.display = 'block';
-            
-            // Update subtitle
-            document.querySelector('.subtitle').textContent = 'Access your portal features below';
-        }
-
-        function logout() {
-            localStorage.removeItem('mockAppUser');
-            // Reset to show the user form
-            document.getElementById('userForm').style.display = 'block';
-            document.getElementById('quickLinks').style.display = 'none';
-            document.querySelector('.subtitle').textContent = 'Please enter your information to access portal features';
-        }
 
         // Gift Request System URL (hardcoded)
         const GIFT_SYSTEM_URL = 'https://instant-jeanmarie-mariadassous-projects.vercel.app';
-
-        // Handle gift request button click
-        document.getElementById('giftRequestBtn').addEventListener('click', function() {
-            const url = buildGiftRequestUrl(GIFT_SYSTEM_URL);
-            
-            // Open in new tab
-            window.open(url, '_blank');
-        });
-
-        // Handle my submissions link click
-        document.getElementById('mySubmissionsLink').addEventListener('click', function(e) {
-            e.preventDefault();
-            const url = buildMySubmissionsUrl(GIFT_SYSTEM_URL);
-            
-            // Open in new tab
-            window.open(url, '_blank');
-        });
 
         // Access tokens for secure access to gift system
         const USER_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2';
