@@ -656,6 +656,15 @@
             document.getElementById('department').value = userData.department || '';
         }
 
+        // Add URL preview on hover for admin button
+        const adminBtn = document.getElementById('adminLoginBtn');
+        if (adminBtn) {
+            adminBtn.addEventListener('mouseenter', function() {
+                const adminUrl = `${VERCEL_URL}/admin?adminToken=${ADMIN_ACCESS_TOKEN}&env=${getCurrentEnvironment()}`;
+                this.setAttribute('title', adminUrl);
+            });
+        }
+
         // Handle admin login button click
         document.getElementById('adminLoginBtn').addEventListener('click', function() {
             // Pass admin access token and environment - no separate credentials needed
@@ -663,6 +672,34 @@
             const adminUrl = `${VERCEL_URL}/admin?adminToken=${ADMIN_ACCESS_TOKEN}&env=${getCurrentEnvironment()}`;
             window.open(adminUrl, '_blank');
         });
+
+        // Update button with URL on hover
+        const userFormBtn = document.querySelector('#userForm button[type="submit"]');
+        if (userFormBtn) {
+            userFormBtn.addEventListener('mouseenter', function() {
+                // Build URL preview
+                const tempUserData = {
+                    userId: document.getElementById('userId').value || 'your-id',
+                    userName: document.getElementById('userName').value || 'your-name',
+                    userEmail: document.getElementById('userEmail').value || 'email@company.com',
+                    companyName: document.getElementById('companyName').value,
+                    department: document.getElementById('department').value
+                };
+                
+                const params = new URLSearchParams({
+                    token: USER_ACCESS_TOKEN,
+                    env: getCurrentEnvironment(),
+                    userId: tempUserData.userId,
+                    userName: tempUserData.userName,
+                    userEmail: tempUserData.userEmail
+                });
+                if (tempUserData.companyName) params.append('companyName', tempUserData.companyName);
+                if (tempUserData.department) params.append('department', tempUserData.department);
+                
+                const previewUrl = `${VERCEL_URL}/?${params.toString()}`;
+                this.setAttribute('title', previewUrl);
+            });
+        }
 
         // Handle form submission - directly open gift request system
         document.getElementById('userForm').addEventListener('submit', function(e) {
