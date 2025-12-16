@@ -170,7 +170,7 @@ export default function FormPage() {
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
             <button 
               onClick={() => window.close()}
-              className="btn btn-primary"
+              className="btn btn-secondary"
             >
               Close
             </button>
@@ -302,7 +302,7 @@ export default function FormPage() {
             </Link>
             <button 
               onClick={() => window.close()}
-              className="btn btn-primary"
+              className="btn btn-secondary"
             >
               Close
             </button>
@@ -334,7 +334,7 @@ export default function FormPage() {
             </button>
             <button 
               onClick={() => window.close()}
-              className="btn btn-primary"
+              className="btn btn-secondary"
             >
               Close
             </button>
