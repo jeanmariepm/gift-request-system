@@ -98,7 +98,15 @@ export default function AdminDashboardPage() {
     <div className="container">
       <Logo />
       
-      <h1 className="page-title">Admin Dashboard</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <h1 className="page-title" style={{ margin: 0 }}>Admin Dashboard</h1>
+        <button 
+          onClick={handleClose}
+          className="btn btn-secondary"
+        >
+          Close
+        </button>
+      </div>
       
       <div className="card">
         {/* Stats */}

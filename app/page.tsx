@@ -167,13 +167,22 @@ export default function FormPage() {
         <h1 className="page-title">Gift Request Form</h1>
         
         <div className="card">
-          <button 
-            onClick={() => setShowForm(false)}
-            className="nav-link"
-            style={{ marginBottom: '1rem', padding: '0.5rem 1rem' }}
-          >
-            ← Back to My Requests
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <button 
+              onClick={() => setShowForm(false)}
+              className="nav-link"
+              style={{ padding: '0.5rem 1rem' }}
+            >
+              ← Back to My Requests
+            </button>
+            <button 
+              onClick={() => window.close()}
+              className="btn btn-secondary"
+              style={{ padding: '0.5rem 1rem' }}
+            >
+              Close
+            </button>
+          </div>
 
           {/* Read-only section */}
           <div className="read-only-section">
@@ -325,12 +334,21 @@ export default function FormPage() {
             <h2>Welcome, {userName}!</h2>
             <p className="subtitle">Manage your gift requests below:</p>
           </div>
-          <button 
-            onClick={() => setShowForm(true)}
-            className="btn btn-primary"
-          >
-            + New Request
-          </button>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button 
+              onClick={() => setShowForm(true)}
+              className="btn btn-primary"
+            >
+              + New Request
+            </button>
+            <button 
+              onClick={() => window.close()}
+              className="btn btn-secondary"
+              style={{ background: 'rgba(255,255,255,0.3)', color: 'white', border: '2px solid white' }}
+            >
+              Close
+            </button>
+          </div>
         </div>
 
         {submissionsError && (
