@@ -445,26 +445,6 @@
                 </button>
             </form>
 
-            <!-- User Info Display (shown after login) -->
-            <div id="userInfoDisplay" class="user-info-display">
-                <h3>👤 Your Information</h3>
-                <div class="info-row">
-                    <strong>User ID:</strong> <span id="displayUserId"></span>
-                </div>
-                <div class="info-row">
-                    <strong>Name:</strong> <span id="displayUserName"></span>
-                </div>
-                <div class="info-row">
-                    <strong>Email:</strong> <span id="displayUserEmail"></span>
-                </div>
-                <div class="info-row">
-                    <strong>Company:</strong> <span id="displayCompany"></span>
-                </div>
-                <div class="info-row">
-                    <strong>Department:</strong> <span id="displayDepartment"></span>
-                </div>
-            </div>
-
             <!-- Quick Links (shown after login) -->
             <div id="quickLinks" class="quick-links" style="display: none;">
                 <h3>📋 Quick Actions</h3>
@@ -702,18 +682,7 @@
             // Hide form
             document.getElementById('userForm').style.display = 'none';
             
-            // Show user info
-            const userInfoDisplay = document.getElementById('userInfoDisplay');
-            userInfoDisplay.classList.add('show');
-            
-            // Populate user info
-            document.getElementById('displayUserId').textContent = userData.userId;
-            document.getElementById('displayUserName').textContent = userData.userName;
-            document.getElementById('displayUserEmail').textContent = userData.userEmail;
-            document.getElementById('displayCompany').textContent = userData.companyName || 'N/A';
-            document.getElementById('displayDepartment').textContent = userData.department || 'N/A';
-            
-            // Show quick links
+            // Show quick links directly (skip user info display)
             document.getElementById('quickLinks').style.display = 'block';
             
             // Update subtitle
@@ -724,7 +693,6 @@
             localStorage.removeItem('mockAppUser');
             // Reset to show the user form
             document.getElementById('userForm').style.display = 'block';
-            document.getElementById('userInfoDisplay').classList.remove('show');
             document.getElementById('quickLinks').style.display = 'none';
             document.querySelector('.subtitle').textContent = 'Please enter your information to access portal features';
         }
