@@ -167,14 +167,7 @@ export default function FormPage() {
         <h1 className="page-title">Gift Request Form</h1>
         
         <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <button 
-              onClick={() => setShowForm(false)}
-              className="nav-link"
-              style={{ padding: '0.5rem 1rem' }}
-            >
-              ← Back to My Requests
-            </button>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
             <button 
               onClick={() => window.close()}
               className="btn btn-primary"
