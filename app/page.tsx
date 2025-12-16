@@ -177,8 +177,7 @@ export default function FormPage() {
             </button>
             <button 
               onClick={() => window.close()}
-              className="btn btn-secondary"
-              style={{ padding: '0.5rem 1rem' }}
+              className="btn btn-primary"
             >
               Close
             </button>
@@ -311,9 +310,9 @@ export default function FormPage() {
             </Link>
             <button 
               onClick={() => window.close()}
-              className="btn btn-secondary"
+              className="btn btn-primary"
             >
-              Close Window
+              Close
             </button>
           </div>
         </div>
@@ -343,8 +342,7 @@ export default function FormPage() {
             </button>
             <button 
               onClick={() => window.close()}
-              className="btn btn-secondary"
-              style={{ background: 'rgba(255,255,255,0.3)', color: 'white', border: '2px solid white' }}
+              className="btn btn-primary"
             >
               Close
             </button>

@@ -102,7 +102,7 @@ export default function AdminDashboardPage() {
         <h1 className="page-title" style={{ margin: 0 }}>Admin Dashboard</h1>
         <button 
           onClick={handleClose}
-          className="btn btn-secondary"
+          className="btn btn-primary"
         >
           Close
         </button>
