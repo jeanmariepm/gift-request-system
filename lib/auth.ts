@@ -7,22 +7,10 @@ const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD
   : bcrypt.hashSync('changeme123', 10)
 
 export async function verifyAdminCredentials(username: string, password: string): Promise<boolean> {
-  console.log('🔍 Login attempt:', { 
-    providedUsername: username, 
-    expectedUsername: ADMIN_USERNAME,
-    providedPassword: password,
-    hasAdminPassword: !!process.env.ADMIN_PASSWORD,
-    adminPasswordValue: process.env.ADMIN_PASSWORD
-  })
-  
   if (username !== ADMIN_USERNAME) {
-    console.log('❌ Username mismatch')
     return false
   }
-  
-  const isValid = bcrypt.compareSync(password, ADMIN_PASSWORD_HASH)
-  console.log('🔐 Password check result:', isValid)
-  return isValid
+  return bcrypt.compareSync(password, ADMIN_PASSWORD_HASH)
 }
 
 export async function setAdminSession() {
