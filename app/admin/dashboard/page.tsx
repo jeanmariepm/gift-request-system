@@ -77,9 +77,8 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const handleLogout = async () => {
-    await fetch('/api/admin/logout', { method: 'POST' })
-    router.push('/admin')
+  const handleClose = () => {
+    window.close()
   }
 
   const filteredSubmissions = filterStatus === 'all' 
@@ -97,8 +96,8 @@ export default function AdminDashboardPage() {
     <div className="container">
       <div className="header">
         <h1>🎯 Admin Dashboard</h1>
-        <button onClick={handleLogout} className="btn btn-secondary">
-          Logout
+        <button onClick={handleClose} className="btn btn-secondary">
+          Close Window
         </button>
       </div>
       

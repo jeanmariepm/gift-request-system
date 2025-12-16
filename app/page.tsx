@@ -293,6 +293,12 @@ export default function FormPage() {
                 View My Submissions
               </button>
             </Link>
+            <button 
+              onClick={() => window.close()}
+              className="btn btn-secondary"
+            >
+              Close Window
+            </button>
           </div>
         </div>
       </div>
@@ -310,12 +316,20 @@ export default function FormPage() {
             <h2>Welcome, {userName}!</h2>
             <p className="subtitle">Manage your gift requests below</p>
           </div>
-          <button 
-            onClick={() => setShowForm(true)}
-            className="btn btn-primary"
-          >
-            + New Request
-          </button>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button 
+              onClick={() => setShowForm(true)}
+              className="btn btn-primary"
+            >
+              + New Request
+            </button>
+            <button 
+              onClick={() => window.close()}
+              className="btn btn-secondary"
+            >
+              Close Window
+            </button>
+          </div>
         </div>
 
         {submissionsError && (
