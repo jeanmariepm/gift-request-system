@@ -321,6 +321,18 @@
                     ℹ️ This is a mock authentication system for testing
                 </div>
 
+                <!-- Environment Selector -->
+                <div class="form-group">
+                    <label for="environmentSelect">🌍 Environment</label>
+                    <select id="environmentSelect" style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+                        <option value="production">🚀 Production</option>
+                        <option value="development">🔧 Development</option>
+                    </select>
+                    <small style="color: #718096; display: block; margin-top: 0.5rem;">
+                        Select which environment to connect to
+                    </small>
+                </div>
+
                 <div id="loginError" class="alert alert-error" style="display: none;"></div>
 
                 <form id="loginForm">
@@ -534,6 +546,19 @@
             resetInactivityTimer();
         }
 
+        // Handle environment selection
+        if (envSelect) {
+            envSelect.addEventListener('change', function() {
+                selectedEnvironment = this.value;
+                localStorage.setItem('selectedEnvironment', selectedEnvironment);
+                
+                // Show notification
+                const envName = selectedEnvironment === 'production' ? 'Production' : 'Development';
+                const icon = selectedEnvironment === 'production' ? '🚀' : '🔧';
+                alert(`${icon} Environment switched to ${envName}`);
+            });
+        }
+
         // Handle portal login
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -541,6 +566,12 @@
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
             const errorDiv = document.getElementById('loginError');
+            
+            // Save selected environment
+            if (envSelect) {
+                selectedEnvironment = envSelect.value;
+                localStorage.setItem('selectedEnvironment', selectedEnvironment);
+            }
             
             // Simple authentication (in real app, this would be server-side)
             if (username === 'admin' && password === 'admin123') {
@@ -612,14 +643,12 @@
             document.getElementById('department').value = userData.department || '';
         }
 
-        // Admin Panel URL (hardcoded)
-        const ADMIN_PANEL_URL = 'https://instant-jeanmarie-mariadassous-projects.vercel.app/admin';
-
         // Handle admin login button click
         document.getElementById('adminLoginBtn').addEventListener('click', function() {
             // Pass admin access token - no separate credentials needed
             // Coming from the mock app with the admin token is sufficient authentication
-            const adminUrl = `${ADMIN_PANEL_URL}?adminToken=${ADMIN_ACCESS_TOKEN}`;
+            const env = getCurrentEnvironment();
+            const adminUrl = `${env.adminPanel}?adminToken=${ADMIN_ACCESS_TOKEN}`;
             window.open(adminUrl, '_blank');
         });
 
@@ -639,14 +668,42 @@
             // Store in localStorage
             localStorage.setItem('mockAppUser', JSON.stringify(userData));
 
-            // Directly open gift request system
-            const url = buildGiftRequestUrl(GIFT_SYSTEM_URL);
+            // Directly open gift request system (using current environment)
+            const env = getCurrentEnvironment();
+            const url = buildGiftRequestUrl(env.giftSystem);
             window.open(url, '_blank');
         });
 
 
-        // Gift Request System URL (hardcoded)
-        const GIFT_SYSTEM_URL = 'https://instant-jeanmarie-mariadassous-projects.vercel.app';
+        // Environment URLs
+        const ENVIRONMENTS = {
+            production: {
+                giftSystem: 'https://instant-jeanmarie-mariadassous-projects.vercel.app',
+                adminPanel: 'https://instant-jeanmarie-mariadassous-projects.vercel.app/admin'
+            },
+            development: {
+                giftSystem: 'https://your-dev-deployment.vercel.app', // Will be updated after dev deployment
+                adminPanel: 'https://your-dev-deployment.vercel.app/admin' // Will be updated after dev deployment
+            }
+        };
+
+        // Get selected environment (default to production)
+        let selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'production';
+        
+        // Update environment selector if it exists
+        const envSelect = document.getElementById('environmentSelect');
+        if (envSelect) {
+            envSelect.value = selectedEnvironment;
+        }
+
+        // Get current environment URLs
+        function getCurrentEnvironment() {
+            selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'production';
+            return ENVIRONMENTS[selectedEnvironment];
+        }
+
+        const GIFT_SYSTEM_URL = getCurrentEnvironment().giftSystem;
+        const ADMIN_PANEL_URL = getCurrentEnvironment().adminPanel;
 
         // Access tokens for secure access to gift system
         const USER_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2';
