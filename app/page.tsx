@@ -187,13 +187,14 @@ export default function FormPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="recipientEmail">Recipient Email Address</label>
+              <label htmlFor="recipientEmail">Recipient Email Address *</label>
               <input
                 type="email"
                 id="recipientEmail"
                 value={recipientEmail}
                 onChange={(e) => setRecipientEmail(e.target.value)}
-                placeholder="Enter recipient's email (optional)"
+                placeholder="Enter recipient's email"
+                required
               />
             </div>
 

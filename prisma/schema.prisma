@@ -17,7 +17,7 @@ model Submission {
   
   // User inputs
   recipientName     String
-  recipientEmail    String?  // Optional recipient email
+  recipientEmail    String   // Required recipient email
   recipientUsername String?  // Optional recipient username
   giftType          String
   message           String?
