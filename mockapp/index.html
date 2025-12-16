@@ -569,6 +569,35 @@
     </div>
 
     <script>
+        // Auto-logout after inactivity
+        const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
+        let inactivityTimer = null;
+
+        function resetInactivityTimer() {
+            // Clear existing timer
+            if (inactivityTimer) {
+                clearTimeout(inactivityTimer);
+            }
+
+            // Only set timer if user is logged in
+            if (localStorage.getItem('portalLoggedIn') === 'true') {
+                inactivityTimer = setTimeout(() => {
+                    // Auto logout
+                    alert('⏱️ You have been logged out due to inactivity (30 minutes).');
+                    localStorage.removeItem('portalLoggedIn');
+                    localStorage.removeItem('portalUsername');
+                    localStorage.removeItem('mockAppUser');
+                    location.reload();
+                }, INACTIVITY_TIMEOUT);
+            }
+        }
+
+        // Track user activity
+        const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+        activityEvents.forEach(event => {
+            document.addEventListener(event, resetInactivityTimer, true);
+        });
+
         // Check if user is logged into portal
         let isPortalLoggedIn = localStorage.getItem('portalLoggedIn') === 'true';
         
@@ -576,6 +605,8 @@
         if (isPortalLoggedIn) {
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('main-content').classList.remove('hidden');
+            // Start inactivity timer
+            resetInactivityTimer();
         }
 
         // Handle portal login
@@ -596,6 +627,9 @@
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
                 
+                // Start inactivity timer
+                resetInactivityTimer();
+                
                 errorDiv.style.display = 'none';
             } else {
                 // Login failed
@@ -607,6 +641,10 @@
         // Logout from portal
         function logoutFromPortal() {
             if (confirm('Are you sure you want to logout from the portal?')) {
+                // Clear inactivity timer
+                if (inactivityTimer) {
+                    clearTimeout(inactivityTimer);
+                }
                 localStorage.removeItem('portalLoggedIn');
                 localStorage.removeItem('portalUsername');
                 localStorage.removeItem('mockAppUser'); // Clear user data too
