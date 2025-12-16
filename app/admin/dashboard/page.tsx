@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Logo from '../../components/Logo'
 
 interface Submission {
   id: string
@@ -95,12 +96,9 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="container">
-      <div className="header">
-        <h1>🎯 Admin Dashboard</h1>
-        <button onClick={handleClose} className="btn btn-secondary">
-          Close Window
-        </button>
-      </div>
+      <Logo />
+      
+      <h1 className="page-title">Admin Dashboard</h1>
       
       <div className="card">
         {/* Stats */}

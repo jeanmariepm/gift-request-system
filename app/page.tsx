@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import Logo from './components/Logo'
 
 const REQUIRED_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2'
 
@@ -161,7 +162,9 @@ export default function FormPage() {
   if (showForm && !showConfirmation) {
     return (
       <div className="container">
-        <h1>🎁 Gift Request Form</h1>
+        <Logo />
+        
+        <h1 className="page-title">Gift Request Form</h1>
         
         <div className="card">
           <button 
@@ -278,6 +281,8 @@ export default function FormPage() {
   if (showConfirmation) {
     return (
       <div className="container">
+        <Logo />
+        
         <div className="card">
           <h2>✅ Submission Successful!</h2>
           <div className="alert alert-success">
@@ -310,14 +315,7 @@ export default function FormPage() {
   // Default view: Show submissions list
   return (
     <div className="container">
-      <div className="logo">
-        <svg width="240" height="50" viewBox="0 0 240 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20 10C15 10 10 15 10 20C10 25 15 30 20 30C25 30 30 25 30 20C30 15 35 10 40 10C45 10 50 15 50 20C50 25 45 30 40 30C35 30 30 35 30 40" stroke="#3498DB" strokeWidth="3" fill="none"/>
-          <text x="70" y="32" fontFamily="Arial, sans-serif" fontSize="24" fontWeight="bold" fill="#1B4F72">Into</text>
-          <text x="135" y="32" fontFamily="Arial, sans-serif" fontSize="24" fontWeight="bold" fill="#000">Bridge</text>
-          <text x="215" y="32" fontFamily="Arial, sans-serif" fontSize="16" fill="#3498DB">.com</text>
-        </svg>
-      </div>
+      <Logo />
       
       <h1 className="page-title">My Gift Requests</h1>
       

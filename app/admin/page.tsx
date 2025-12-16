@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import Logo from '../components/Logo'
 
 // Admin access token (separate from user access token)
 const REQUIRED_ADMIN_TOKEN = 'admin_access_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6'
@@ -52,6 +53,8 @@ export default function AdminLoginPage() {
   if (accessDenied) {
     return (
       <div className="container">
+        <Logo />
+        
         <div className="card" style={{ maxWidth: '500px', margin: '2rem auto', textAlign: 'center' }}>
           <h1 style={{ color: '#e53e3e', marginBottom: '1rem' }}>🚫 Access Denied</h1>
           <p style={{ color: '#718096', marginBottom: '1.5rem' }}>
@@ -68,6 +71,8 @@ export default function AdminLoginPage() {
   // Show authenticating screen
   return (
     <div className="container">
+      <Logo />
+      
       <div className="card" style={{ maxWidth: '500px', margin: '2rem auto', textAlign: 'center' }}>
         <h1 style={{ marginBottom: '1rem' }}>🔓 Authenticating...</h1>
         <p style={{ color: '#718096', marginBottom: '1.5rem' }}>
