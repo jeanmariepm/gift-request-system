@@ -481,20 +481,6 @@
                         <li>Track who processed each request and when</li>
                     </ul>
                 </div>
-
-                <!-- Settings Section for Admin -->
-                <div class="settings-section" style="margin-top: 2rem;">
-                    <h3>⚙️ Admin Panel URL</h3>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <input 
-                            type="text" 
-                            id="adminSystemUrl" 
-                            placeholder="https://instant-jeanmarie-mariadassous-projects.vercel.app/admin"
-                            value="https://instant-jeanmarie-mariadassous-projects.vercel.app/admin"
-                        >
-                        <small>Change this to your deployed admin URL when ready</small>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -626,13 +612,14 @@
             document.getElementById('department').value = userData.department || '';
         }
 
+        // Admin Panel URL (hardcoded)
+        const ADMIN_PANEL_URL = 'https://instant-jeanmarie-mariadassous-projects.vercel.app/admin';
+
         // Handle admin login button click
         document.getElementById('adminLoginBtn').addEventListener('click', function() {
-            const baseAdminUrl = document.getElementById('adminSystemUrl').value.trim() || 'http://localhost:3000/admin';
-            
             // Pass admin access token - no separate credentials needed
             // Coming from the mock app with the admin token is sufficient authentication
-            const adminUrl = `${baseAdminUrl}?adminToken=${ADMIN_ACCESS_TOKEN}`;
+            const adminUrl = `${ADMIN_PANEL_URL}?adminToken=${ADMIN_ACCESS_TOKEN}`;
             window.open(adminUrl, '_blank');
         });
 
