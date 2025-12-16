@@ -13,7 +13,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #C5E6F3;
   min-height: 100vh;
 }
 
@@ -23,16 +23,51 @@ a {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
 }
 
+.logo {
+  margin-bottom: 1.5rem;
+}
+
+.logo img {
+  height: 50px;
+}
+
+.page-title {
+  color: #1B4F72;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
 .card {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #5DADE2 0%, #3498DB 100%);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.card-header h2 {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.card-header .subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
 }
 
 .form-group {
@@ -73,7 +108,7 @@ a {
 .btn {
   padding: 0.75rem 2rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -81,13 +116,16 @@ a {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #A8D5E8;
+  color: #1B4F72;
+  padding: 1rem 2rem;
+  font-weight: 600;
 }
 
 .btn-primary:hover {
+  background: #8BC9E0;
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary:disabled {
@@ -141,40 +179,57 @@ a {
   border: 1px solid #fc8181;
 }
 
+.table-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
+  margin: 0;
 }
 
 .table th,
 .table td {
-  padding: 1rem;
+  padding: 1.25rem 1rem;
   text-align: left;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #E8F4F8;
 }
 
 .table th {
-  background: #f7fafc;
+  background: #D4E9F3;
   font-weight: 600;
-  color: #4a5568;
+  color: #1B4F72;
+  font-size: 1rem;
 }
 
-.table tr:hover {
-  background: #f7fafc;
+.table td {
+  color: #1B4F72;
+  background: white;
+}
+
+.table tbody tr:nth-child(even) td {
+  background: #F5FBFE;
+}
+
+.table tr:hover td {
+  background: #E8F4F8;
 }
 
 .badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.875rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
 .badge-pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: #F4D03F;
+  color: #1B4F72;
 }
 
 .badge-processed {

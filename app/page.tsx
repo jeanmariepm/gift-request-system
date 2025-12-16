@@ -310,28 +310,29 @@ export default function FormPage() {
   // Default view: Show submissions list
   return (
     <div className="container">
-      <h1>🎁 My Gift Requests</h1>
+      <div className="logo">
+        <svg width="240" height="50" viewBox="0 0 240 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 10C15 10 10 15 10 20C10 25 15 30 20 30C25 30 30 25 30 20C30 15 35 10 40 10C45 10 50 15 50 20C50 25 45 30 40 30C35 30 30 35 30 40" stroke="#3498DB" strokeWidth="3" fill="none"/>
+          <text x="70" y="32" fontFamily="Arial, sans-serif" fontSize="24" fontWeight="bold" fill="#1B4F72">Into</text>
+          <text x="135" y="32" fontFamily="Arial, sans-serif" fontSize="24" fontWeight="bold" fill="#000">Bridge</text>
+          <text x="215" y="32" fontFamily="Arial, sans-serif" fontSize="16" fill="#3498DB">.com</text>
+        </svg>
+      </div>
+      
+      <h1 className="page-title">My Gift Requests</h1>
       
       <div className="card">
-        <div className="header">
+        <div className="card-header">
           <div>
             <h2>Welcome, {userName}!</h2>
-            <p className="subtitle">Manage your gift requests below</p>
+            <p className="subtitle">Manage your gift requests below:</p>
           </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button 
-              onClick={() => setShowForm(true)}
-              className="btn btn-primary"
-            >
-              + New Request
-            </button>
-            <button 
-              onClick={() => window.close()}
-              className="btn btn-secondary"
-            >
-              Close Window
-            </button>
-          </div>
+          <button 
+            onClick={() => setShowForm(true)}
+            className="btn btn-primary"
+          >
+            + New Request
+          </button>
         </div>
 
         {submissionsError && (
@@ -341,12 +342,12 @@ export default function FormPage() {
         )}
 
         {isLoadingSubmissions ? (
-          <p>Loading your requests...</p>
+          <p style={{ color: 'white', textAlign: 'center', padding: '2rem' }}>Loading your requests...</p>
         ) : submissions.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem 2rem', color: '#666' }}>
+          <div style={{ textAlign: 'center', padding: '3rem 2rem' }}>
             <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
-            <h3 style={{ color: '#4a5568', marginBottom: '0.5rem' }}>No requests yet</h3>
-            <p style={{ marginBottom: '2rem' }}>You haven't submitted any gift requests.</p>
+            <h3 style={{ color: 'white', marginBottom: '0.5rem' }}>No requests yet</h3>
+            <p style={{ marginBottom: '2rem', color: 'rgba(255,255,255,0.9)' }}>You haven't submitted any gift requests.</p>
             <button 
               onClick={() => setShowForm(true)}
               className="btn btn-primary"
@@ -355,7 +356,7 @@ export default function FormPage() {
             </button>
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
+          <div className="table-container">
             <table className="table">
               <thead>
                 <tr>
@@ -363,7 +364,6 @@ export default function FormPage() {
                   <th>Duration</th>
                   <th>Recipient Username</th>
                   <th>Recipient Name</th>
-                  <th>Recipient Email</th>
                   <th>Status</th>
                   <th>Message</th>
                 </tr>
@@ -375,7 +375,6 @@ export default function FormPage() {
                     <td>{submission.giftType}</td>
                     <td>{submission.recipientUsername}</td>
                     <td>{submission.recipientName}</td>
-                    <td>{submission.recipientEmail || '-'}</td>
                     <td>
                       <span className={`badge badge-${submission.status.toLowerCase()}`}>
                         {submission.status}
