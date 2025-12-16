@@ -729,10 +729,12 @@
             document.querySelector('.subtitle').textContent = 'Please enter your information to access portal features';
         }
 
+        // Gift Request System URL (hardcoded)
+        const GIFT_SYSTEM_URL = 'https://instant-jeanmarie-mariadassous-projects.vercel.app';
+
         // Handle gift request button click
         document.getElementById('giftRequestBtn').addEventListener('click', function() {
-            const baseUrl = document.getElementById('giftSystemUrl').value.trim() || 'http://localhost:3000';
-            const url = buildGiftRequestUrl(baseUrl);
+            const url = buildGiftRequestUrl(GIFT_SYSTEM_URL);
             
             // Open in new tab
             window.open(url, '_blank');
@@ -741,8 +743,7 @@
         // Handle my submissions link click
         document.getElementById('mySubmissionsLink').addEventListener('click', function(e) {
             e.preventDefault();
-            const baseUrl = document.getElementById('giftSystemUrl').value.trim() || 'http://localhost:3000';
-            const url = buildMySubmissionsUrl(baseUrl);
+            const url = buildMySubmissionsUrl(GIFT_SYSTEM_URL);
             
             // Open in new tab
             window.open(url, '_blank');
