@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { userId, userName, userEmail, giftType, recipientUsername, recipientName, message, env } = body
+    const { userId, userName, userEmail, giftType, recipientUsername, recipientName, recipientEmail, message, env } = body
     
     // Validate required fields
     if (!userId || !userName || !giftType || !recipientUsername || !recipientName) {
@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
         giftType,
         recipientUsername,
         recipientName,
+        recipientEmail: recipientEmail || null,
         message: message || null,
         status: 'Pending'
       }

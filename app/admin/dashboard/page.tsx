@@ -11,6 +11,7 @@ interface Submission {
   giftType: string
   recipientUsername: string
   recipientName: string
+  recipientEmail: string | null
   message: string | null
   status: string
   createdAt: string
@@ -159,6 +160,7 @@ export default function AdminDashboardPage() {
                   <th>Duration</th>
                   <th>Recipient Username</th>
                   <th>Recipient Name</th>
+                  <th>Recipient Email</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -174,6 +176,7 @@ export default function AdminDashboardPage() {
                     <td>{submission.giftType}</td>
                     <td>{submission.recipientUsername}</td>
                     <td>{submission.recipientName}</td>
+                    <td>{submission.recipientEmail || '-'}</td>
                     <td>
                       <span className={`badge badge-${submission.status.toLowerCase()}`}>
                         {submission.status}
@@ -219,6 +222,7 @@ export default function AdminDashboardPage() {
               <div className="read-only-item"><strong>Duration:</strong> {selectedSubmission.giftType}</div>
               <div className="read-only-item"><strong>Recipient Username:</strong> {selectedSubmission.recipientUsername}</div>
               <div className="read-only-item"><strong>Recipient Name:</strong> {selectedSubmission.recipientName}</div>
+              <div className="read-only-item"><strong>Recipient Email:</strong> {selectedSubmission.recipientEmail || 'Not provided'}</div>
               <div className="read-only-item"><strong>Message:</strong> {selectedSubmission.message || 'No message'}</div>
               <div className="read-only-item"><strong>Status:</strong> <span className={`badge badge-${selectedSubmission.status.toLowerCase()}`}>{selectedSubmission.status}</span></div>
               <div className="read-only-item"><strong>Submitted:</strong> {new Date(selectedSubmission.createdAt).toLocaleString()}</div>

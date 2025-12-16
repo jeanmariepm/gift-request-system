@@ -19,6 +19,7 @@ model Submission {
   giftType          String
   recipientUsername String
   recipientName     String
+  recipientEmail    String?  // Optional recipient email
   message           String?
   
   // Status tracking

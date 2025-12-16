@@ -11,6 +11,7 @@ interface Submission {
   giftType: string
   recipientUsername: string
   recipientName: string
+  recipientEmail: string | null
   message: string | null
   status: string
   createdAt: string
@@ -31,6 +32,7 @@ export default function FormPage() {
   const [giftType, setGiftType] = useState('')
   const [recipientUsername, setRecipientUsername] = useState('')
   const [recipientName, setRecipientName] = useState('')
+  const [recipientEmail, setRecipientEmail] = useState('')
   const [message, setMessage] = useState('')
   
   // UI state
@@ -89,6 +91,7 @@ export default function FormPage() {
           giftType,
           recipientUsername,
           recipientName,
+          recipientEmail,
           message
         })
       })
@@ -105,6 +108,7 @@ export default function FormPage() {
       setGiftType('')
       setRecipientUsername('')
       setRecipientName('')
+      setRecipientEmail('')
       setMessage('')
       // Refresh submissions list
       fetchSubmissions()
@@ -224,6 +228,17 @@ export default function FormPage() {
                 onChange={(e) => setRecipientName(e.target.value)}
                 placeholder="Enter recipient's full name"
                 required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="recipientEmail">Recipient Email Address</label>
+              <input
+                type="email"
+                id="recipientEmail"
+                value={recipientEmail}
+                onChange={(e) => setRecipientEmail(e.target.value)}
+                placeholder="Enter recipient's email (optional)"
               />
             </div>
 
@@ -348,6 +363,7 @@ export default function FormPage() {
                   <th>Duration</th>
                   <th>Recipient Username</th>
                   <th>Recipient Name</th>
+                  <th>Recipient Email</th>
                   <th>Status</th>
                   <th>Message</th>
                 </tr>
@@ -359,6 +375,7 @@ export default function FormPage() {
                     <td>{submission.giftType}</td>
                     <td>{submission.recipientUsername}</td>
                     <td>{submission.recipientName}</td>
+                    <td>{submission.recipientEmail || '-'}</td>
                     <td>
                       <span className={`badge badge-${submission.status.toLowerCase()}`}>
                         {submission.status}
