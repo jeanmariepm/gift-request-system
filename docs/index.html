@@ -562,32 +562,42 @@
         // Handle portal login
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            console.log('Login form submitted');
             
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
             const errorDiv = document.getElementById('loginError');
             
+            console.log('Username:', username, 'Password:', password);
+            
             // Save selected environment
             if (envSelect) {
                 selectedEnvironment = envSelect.value;
                 localStorage.setItem('selectedEnvironment', selectedEnvironment);
+                console.log('Environment saved:', selectedEnvironment);
             }
             
             // Simple authentication (in real app, this would be server-side)
             if (username === 'admin' && password === 'admin123') {
+                console.log('Login successful!');
                 // Login successful
                 localStorage.setItem('portalLoggedIn', 'true');
                 localStorage.setItem('portalUsername', username);
                 
                 // Hide login, show main content
-                document.getElementById('login-section').classList.add('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
+                const loginSection = document.getElementById('login-section');
+                const mainContent = document.getElementById('main-content');
+                console.log('Login section:', loginSection, 'Main content:', mainContent);
+                
+                loginSection.classList.add('hidden');
+                mainContent.classList.remove('hidden');
                 
                 // Start inactivity timer
                 resetInactivityTimer();
                 
                 errorDiv.style.display = 'none';
             } else {
+                console.log('Login failed - invalid credentials');
                 // Login failed
                 errorDiv.textContent = '❌ Invalid username or password';
                 errorDiv.style.display = 'block';
