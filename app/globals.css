@@ -395,6 +395,12 @@ h2 {
   display: block;
 }
 
+/* Header buttons responsive layout */
+.header-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
 @media (max-width: 768px) {
   .mobile-only {
     display: block;
@@ -402,6 +408,23 @@ h2 {
   
   .desktop-only {
     display: none;
+  }
+  
+  /* Stack header buttons vertically on mobile */
+  .header-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .header-buttons .btn {
+    width: 100%;
+  }
+  
+  /* Stack card header content on mobile */
+  .card-header {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: stretch !important;
   }
   
   /* Mobile Card Styles */

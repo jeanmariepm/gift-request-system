@@ -377,7 +377,7 @@ export default function FormPage() {
             <h2>Welcome, {userName}!</h2>
             <p className="subtitle">Manage your gift requests below:</p>
           </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div className="header-buttons">
             <button 
               onClick={() => setShowForm(true)}
               className="btn btn-primary"
