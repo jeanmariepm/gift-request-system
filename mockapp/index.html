@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main App - Company Portal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            font-size: 1.875rem;
+        }
+
+        .card .subtitle {
+            color: #718096;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .user-info-display {
+            background: #f7fafc;
+            border-left: 4px solid #4299e1;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .user-info-display.show {
+            display: block;
+        }
+
+        .user-info-display h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .info-row {
+            margin-bottom: 0.75rem;
+            color: #4a5568;
+        }
+
+        .info-row strong {
+            color: #2d3748;
+            display: inline-block;
+            min-width: 120px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(66, 153, 225, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            margin-top: 1rem;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-info {
+            background: #bee3f8;
+            color: #2c5282;
+            border: 1px solid #90cdf4;
+        }
+
+        .quick-links {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .quick-links h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .link-button {
+            display: block;
+            padding: 0.75rem;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            color: #2d3748;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .link-button:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .settings-section {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+
+        .settings-section h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .settings-section small {
+            color: #718096;
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .tab:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tab.active {
+            color: white;
+            border-bottom-color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        .login-card {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .admin-section {
+            background: #f7fafc;
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .admin-section h3 {
+            color: #c53030;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 2rem 1.5rem;
+            }
+
+            .logo h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🏢 Company Portal</h1>
+            <p>Employee Dashboard</p>
+        </div>
+
+        <!-- Login Form (shown first) -->
+        <div id="login-section" class="login-container">
+            <div class="card login-card">
+                <h2>🔐 Portal Login</h2>
+                <p class="subtitle">Please login to access the portal</p>
+
+                <div class="alert alert-info">
+                    ℹ️ This is a mock authentication system for testing
+                </div>
+
+                <div id="loginError" class="alert alert-error" style="display: none;"></div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input 
+                            type="text" 
+                            id="loginUsername" 
+                            placeholder="Enter username"
+                            required
+                            autocomplete="username"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input 
+                            type="password" 
+                            id="loginPassword" 
+                            placeholder="Enter password"
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        Login to Portal
+                    </button>
+                </form>
+
+                <div style="margin-top: 2rem; padding: 1rem; background: #f7fafc; border-radius: 8px;">
+                    <h4 style="color: #2d3748; margin-bottom: 0.5rem; font-size: 0.9rem;">Test Credentials</h4>
+                    <div style="font-size: 0.875rem; color: #4a5568;">
+                        <div style="margin-bottom: 0.25rem;"><strong>Username:</strong> admin</div>
+                        <div><strong>Password:</strong> admin123</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content (shown after login) -->
+        <div id="main-content" class="hidden">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('simulator')">
+                    👤 Simulator
+                </button>
+                <button class="tab" onclick="switchTab('admin')">
+                    🔐 Admin
+                </button>
+            </div>
+
+        <!-- Simulator Tab Content -->
+        <div id="simulator-tab" class="tab-content active">
+            <div class="card">
+                <h2>Welcome!</h2>
+                <p class="subtitle">Please enter your information to access portal features</p>
+
+                <div class="alert alert-info">
+                    ℹ️ This is a mock application demonstrating integration with the Gift Request System
+                </div>
+
+            <form id="userForm">
+                <div class="form-group">
+                    <label for="userId">User ID *</label>
+                    <input 
+                        type="text" 
+                        id="userId" 
+                        placeholder="e.g., emp12345"
+                        value="emp12345"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="userName">Full Name *</label>
+                    <input 
+                        type="text" 
+                        id="userName" 
+                        placeholder="e.g., John Doe"
+                        value="John Doe"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="userEmail">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="userEmail" 
+                        placeholder="e.g., john.doe@company.com"
+                        value="john.doe@company.com"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="companyName">Company Name</label>
+                    <input 
+                        type="text" 
+                        id="companyName" 
+                        placeholder="e.g., Acme Corporation"
+                        value="Acme Corporation"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <select id="department">
+                        <option value="">Select Department</option>
+                        <option value="Engineering" selected>Engineering</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="HR">Human Resources</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Operations">Operations</option>
+                        <option value="IT">Information Technology</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Proceed to Gifts App →
+                </button>
+            </form>
+            </div>
+        </div>
+
+        <!-- Admin Tab Content -->
+        <div id="admin-tab" class="tab-content">
+            <div class="card">
+                <h2>🔐 Administrator Access</h2>
+                <p class="subtitle">Access the admin panel to manage gift requests</p>
+
+                <div class="admin-section">
+                    <h3>
+                        <span>⚠️</span>
+                        <span>Admin Panel</span>
+                    </h3>
+                    <p style="color: #666; margin-bottom: 1.5rem;">
+                        Use this link to access the administrator dashboard where you can review and process gift requests.
+                    </p>
+                    
+                    <button 
+                        id="adminLoginBtn" 
+                        class="btn btn-danger"
+                        style="width: 100%; background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);"
+                    >
+                        🔓 Open Admin Panel
+                    </button>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background: #fff5f5; border: 1px solid #feb2b2; border-radius: 8px;">
+                    <h4 style="color: #c53030; margin-bottom: 0.5rem;">Admin Capabilities</h4>
+                    <ul style="color: #742a2a; margin-left: 1.5rem;">
+                        <li>View all gift requests from all users</li>
+                        <li>Filter requests by status (Pending, Processed, Cancelled)</li>
+                        <li>View detailed information for each request</li>
+                        <li>Change request status to Processed or Cancelled</li>
+                        <li>Track who processed each request and when</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logout Button -->
+        <div style="margin-top: 2rem; text-align: center;">
+            <button onclick="logoutFromPortal()" class="btn btn-secondary">
+                🚪 Logout from Portal
+            </button>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-logout after inactivity
+        const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
+        let inactivityTimer = null;
+
+        function resetInactivityTimer() {
+            // Clear existing timer
+            if (inactivityTimer) {
+                clearTimeout(inactivityTimer);
+            }
+
+            // Only set timer if user is logged in
+            if (localStorage.getItem('portalLoggedIn') === 'true') {
+                inactivityTimer = setTimeout(() => {
+                    // Auto logout
+                    alert('⏱️ You have been logged out due to inactivity (30 minutes).');
+                    localStorage.removeItem('portalLoggedIn');
+                    localStorage.removeItem('portalUsername');
+                    localStorage.removeItem('mockAppUser');
+                    location.reload();
+                }, INACTIVITY_TIMEOUT);
+            }
+        }
+
+        // Track user activity
+        const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+        activityEvents.forEach(event => {
+            document.addEventListener(event, resetInactivityTimer, true);
+        });
+
+        // Check if user is logged into portal
+        let isPortalLoggedIn = localStorage.getItem('portalLoggedIn') === 'true';
+        
+        // Show/hide sections based on portal login
+        if (isPortalLoggedIn) {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            // Start inactivity timer
+            resetInactivityTimer();
+        }
+
+        // Handle portal login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            // Simple authentication (in real app, this would be server-side)
+            if (username === 'admin' && password === 'admin123') {
+                // Login successful
+                localStorage.setItem('portalLoggedIn', 'true');
+                localStorage.setItem('portalUsername', username);
+                
+                // Hide login, show main content
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                
+                // Start inactivity timer
+                resetInactivityTimer();
+                
+                errorDiv.style.display = 'none';
+            } else {
+                // Login failed
+                errorDiv.textContent = '❌ Invalid username or password';
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        // Logout from portal
+        function logoutFromPortal() {
+            if (confirm('Are you sure you want to logout from the portal?')) {
+                // Clear inactivity timer
+                if (inactivityTimer) {
+                    clearTimeout(inactivityTimer);
+                }
+                localStorage.removeItem('portalLoggedIn');
+                localStorage.removeItem('portalUsername');
+                localStorage.removeItem('mockAppUser'); // Clear user data too
+                location.reload();
+            }
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        // Store user data
+        let userData = {
+            userId: '',
+            userName: '',
+            userEmail: '',
+            companyName: '',
+            department: ''
+        };
+
+        // Load user data if exists
+        if (localStorage.getItem('mockAppUser')) {
+            userData = JSON.parse(localStorage.getItem('mockAppUser'));
+            // Pre-fill form fields
+            document.getElementById('userId').value = userData.userId || '';
+            document.getElementById('userName').value = userData.userName || '';
+            document.getElementById('userEmail').value = userData.userEmail || '';
+            document.getElementById('companyName').value = userData.companyName || '';
+            document.getElementById('department').value = userData.department || '';
+        }
+
+        // Admin Panel URL (hardcoded)
+        const ADMIN_PANEL_URL = 'https://instant-jeanmarie-mariadassous-projects.vercel.app/admin';
+
+        // Handle admin login button click
+        document.getElementById('adminLoginBtn').addEventListener('click', function() {
+            // Pass admin access token - no separate credentials needed
+            // Coming from the mock app with the admin token is sufficient authentication
+            const adminUrl = `${ADMIN_PANEL_URL}?adminToken=${ADMIN_ACCESS_TOKEN}`;
+            window.open(adminUrl, '_blank');
+        });
+
+        // Handle form submission - directly open gift request system
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            userData = {
+                userId: document.getElementById('userId').value,
+                userName: document.getElementById('userName').value,
+                userEmail: document.getElementById('userEmail').value || `${document.getElementById('userId').value}@company.com`,
+                companyName: document.getElementById('companyName').value,
+                department: document.getElementById('department').value
+            };
+
+            // Store in localStorage
+            localStorage.setItem('mockAppUser', JSON.stringify(userData));
+
+            // Directly open gift request system
+            const url = buildGiftRequestUrl(GIFT_SYSTEM_URL);
+            window.open(url, '_blank');
+        });
+
+
+        // Gift Request System URL (hardcoded)
+        const GIFT_SYSTEM_URL = 'https://instant-jeanmarie-mariadassous-projects.vercel.app';
+
+        // Access tokens for secure access to gift system
+        const USER_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2';
+        const ADMIN_ACCESS_TOKEN = 'admin_access_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6';
+
+        // Build gift request URL with parameters
+        function buildGiftRequestUrl(baseUrl) {
+            const params = new URLSearchParams({
+                token: USER_ACCESS_TOKEN,
+                userId: userData.userId,
+                userName: userData.userName,
+                userEmail: userData.userEmail
+            });
+
+            // Add optional parameters if they exist
+            if (userData.companyName) {
+                params.append('companyName', userData.companyName);
+            }
+            if (userData.department) {
+                params.append('department', userData.department);
+            }
+
+            return `${baseUrl}/?${params.toString()}`;
+        }
+
+        // Build my submissions URL
+        function buildMySubmissionsUrl(baseUrl) {
+            const params = new URLSearchParams({
+                token: USER_ACCESS_TOKEN,
+                userId: userData.userId,
+                userName: userData.userName,
+                userEmail: userData.userEmail
+            });
+
+            return `${baseUrl}/my-submissions?${params.toString()}`;
+        }
+    </script>
+</body>
+</html>
+

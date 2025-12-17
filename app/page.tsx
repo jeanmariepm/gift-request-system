@@ -277,11 +277,12 @@ export default function FormPage() {
             >
               Submit Another Request
             </button>
-            <Link href={`/my-submissions?token=${accessToken}&userId=${userId}&userName=${userName}&userEmail=${userEmail}`}>
-              <button className="btn btn-primary">
-                View My Submissions
-              </button>
-            </Link>
+            <button 
+              onClick={() => setShowConfirmation(false)}
+              className="btn btn-primary"
+            >
+              View My Submissions
+            </button>
           </div>
         </div>
       </div>
