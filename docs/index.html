@@ -289,6 +289,26 @@
             gap: 0.5rem;
         }
 
+        .env-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .env-badge.production {
+            background: #48bb78;
+            color: white;
+        }
+
+        .env-badge.development {
+            background: #f6ad55;
+            color: white;
+        }
+
         @media (max-width: 640px) {
             body {
                 padding: 1rem;
@@ -389,6 +409,7 @@
         <div id="simulator-tab" class="tab-content active">
             <div class="card">
                 <h2>Welcome!</h2>
+                <div id="simulator-env-badge" class="env-badge"></div>
                 <p class="subtitle">Please enter your information to access portal features</p>
 
                 <div class="alert alert-info">
@@ -439,6 +460,7 @@
         <div id="admin-tab" class="tab-content">
             <div class="card">
                 <h2>🔐 Administrator Access</h2>
+                <div id="admin-env-badge" class="env-badge"></div>
                 <p class="subtitle">Access the admin panel to manage gift requests</p>
 
                 <div class="admin-section">
@@ -531,12 +553,18 @@
                 selectedEnvironment = this.value;
                 localStorage.setItem('selectedEnvironment', selectedEnvironment);
                 
+                // Update environment badges
+                updateEnvironmentBadges();
+                
                 // Show notification
                 const envName = selectedEnvironment === 'production' ? 'Production' : 'Development';
                 const icon = selectedEnvironment === 'production' ? '🚀' : '🔧';
                 alert(`${icon} Environment switched to ${envName}`);
             });
         }
+        
+        // Initialize environment badges on page load
+        updateEnvironmentBadges();
 
         // Handle portal login
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -704,6 +732,26 @@
         function getCurrentEnvironment() {
             selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'production';
             return selectedEnvironment;
+        }
+
+        // Update environment badges on both tabs
+        function updateEnvironmentBadges() {
+            const env = getCurrentEnvironment();
+            const envName = env === 'production' ? '🚀 Production' : '🔧 Development';
+            const envClass = env === 'production' ? 'production' : 'development';
+            
+            const simulatorBadge = document.getElementById('simulator-env-badge');
+            const adminBadge = document.getElementById('admin-env-badge');
+            
+            if (simulatorBadge) {
+                simulatorBadge.textContent = envName;
+                simulatorBadge.className = `env-badge ${envClass}`;
+            }
+            
+            if (adminBadge) {
+                adminBadge.textContent = envName;
+                adminBadge.className = `env-badge ${envClass}`;
+            }
         }
 
         // Access tokens for secure access to gift system
