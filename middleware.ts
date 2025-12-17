@@ -61,27 +61,34 @@ export function middleware(request: NextRequest) {
     const adminToken = searchParams.get('adminToken')
     const env = searchParams.get('env') || 'production'
 
+    console.log('Admin token validation:', { 
+      receivedToken: adminToken?.substring(0, 20) + '...', 
+      isValid: adminToken === REQUIRED_ADMIN_TOKEN 
+    })
+
     // Validate admin token
     if (adminToken !== REQUIRED_ADMIN_TOKEN) {
       // Invalid token - redirect to access denied
+      console.log('Invalid admin token - redirecting to access denied')
       const response = NextResponse.redirect(new URL('/admin/access-denied', request.url))
       return response
     }
 
     // Valid token - store admin session and redirect to dashboard
+    console.log('Valid admin token - setting cookie and redirecting to dashboard')
     const response = NextResponse.redirect(new URL('/admin/dashboard', request.url))
     
     // Set secure HTTP-only cookie for admin session
-    response.cookies.set('admin_session', JSON.stringify({ 
-      authenticated: true,
-      env 
-    }), {
+    const sessionData = { authenticated: true, env }
+    response.cookies.set('admin_session', JSON.stringify(sessionData), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 60 * 60 * 24, // 24 hours
       path: '/'
     })
+    
+    console.log('Admin cookie set:', sessionData)
     
     return response
   }

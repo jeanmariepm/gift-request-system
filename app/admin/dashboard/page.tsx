@@ -36,12 +36,20 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        const response = await fetch('/api/admin/session')
+        console.log('Fetching admin session...')
+        const response = await fetch('/api/admin/session', {
+          credentials: 'include' // Explicitly include cookies
+        })
+        console.log('Admin session response:', response.status, response.ok)
+        
         if (!response.ok) {
+          const errorData = await response.json()
+          console.error('Admin session error:', errorData)
           router.push('/admin')
           return
         }
         const sessionData = await response.json()
+        console.log('Admin session data:', sessionData)
         setEnv(sessionData.env || 'production')
       } catch (error) {
         console.error('Failed to fetch admin session:', error)
