@@ -504,6 +504,16 @@
     </div>
 
     <script>
+        // ====== CONSTANTS - DEFINE FIRST TO AVOID INITIALIZATION ERRORS ======
+        // Vercel deployment URL (switches database at runtime)
+        // For local testing, use: http://localhost:3000
+        // For production, use: https://instant-jeanmarie-mariadassous-projects.vercel.app
+        const VERCEL_URL = 'http://localhost:3000';
+
+        // Access tokens for secure access to gift system
+        const USER_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2';
+        const ADMIN_ACCESS_TOKEN = 'admin_access_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6';
+
         // Auto-logout after inactivity
         const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
         let inactivityTimer = null;
@@ -690,49 +700,101 @@
             document.getElementById('userEmail').value = userData.userEmail || '';
         }
 
-        // Add URL preview on hover for admin button
-        const adminBtn = document.getElementById('adminLoginBtn');
-        if (adminBtn) {
-            adminBtn.addEventListener('mouseenter', function() {
-                const adminUrl = `${VERCEL_URL}/admin?adminToken=${ADMIN_ACCESS_TOKEN}&env=${getCurrentEnvironment()}`;
-                this.setAttribute('title', adminUrl);
-            });
-        }
+                // Add detailed POST info on hover for admin button (for developers)
+                const adminBtn = document.getElementById('adminLoginBtn');
+                if (adminBtn) {
+                    adminBtn.addEventListener('mouseenter', function() {
+                        const payload = {
+                            adminToken: ADMIN_ACCESS_TOKEN,
+                            env: getCurrentEnvironment()
+                        };
+                        
+                        const tooltipText = `🔐 SECURE ADMIN POST AUTHENTICATION (Developer Info)
+                        
+URL: ${VERCEL_URL}/api/auth/login
+Method: POST
+Content-Type: application/json
 
-        // Handle admin login button click
-        document.getElementById('adminLoginBtn').addEventListener('click', function() {
-            // Pass admin access token and environment - no separate credentials needed
-            // Coming from the mock app with the admin token is sufficient authentication
-            const adminUrl = `${VERCEL_URL}/admin?adminToken=${ADMIN_ACCESS_TOKEN}&env=${getCurrentEnvironment()}`;
-            window.open(adminUrl, '_blank');
+Payload:
+${JSON.stringify(payload, null, 2)}
+
+Security: Admin token sent in request body (not URL!)`;
+                        
+                        this.setAttribute('title', tooltipText);
+                    });
+                }
+
+        // Handle admin login button click - use secure POST method
+        document.getElementById('adminLoginBtn').addEventListener('click', async function() {
+            // Open new window FIRST (to avoid popup blockers)
+            const newWindow = window.open('about:blank', '_blank');
+            
+            if (!newWindow) {
+                alert('Please allow popups for this site');
+                return;
+            }
+
+            // Show loading message
+            newWindow.document.write('<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2>🔐 Authenticating admin access...</h2><p>Please wait while we verify your admin credentials.</p></body></html>');
+
+            try {
+                // Send POST request with admin token in body (never in URL!)
+                const response = await fetch(`${VERCEL_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        adminToken: ADMIN_ACCESS_TOKEN,
+                        env: getCurrentEnvironment()
+                    }),
+                    credentials: 'include' // Important: include cookies
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Redirect to admin dashboard
+                    newWindow.location.href = `${VERCEL_URL}${data.redirectTo}`;
+                } else {
+                    newWindow.document.write(`<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2 style="color: #e53e3e;">❌ Admin Authentication Failed</h2><p>${data.error || 'Unknown error'}</p></body></html>`);
+                }
+            } catch (error) {
+                newWindow.document.write(`<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2 style="color: #e53e3e;">❌ Connection Error</h2><p>Failed to connect to the server. Please try again.</p></body></html>`);
+                console.error('Admin auth error:', error);
+            }
         });
 
-        // Update button with URL on hover
+        // Update button with detailed POST info on hover (for developers)
         const userFormBtn = document.querySelector('#userForm button[type="submit"]');
         if (userFormBtn) {
             userFormBtn.addEventListener('mouseenter', function() {
-                // Build URL preview
-                const tempUserData = {
-                    userId: document.getElementById('userId').value || 'your-id',
-                    userName: document.getElementById('userName').value || 'your-name',
-                    userEmail: document.getElementById('userEmail').value || 'email@company.com'
+                // Build payload preview
+                const payload = {
+                    token: USER_ACCESS_TOKEN,
+                    userId: document.getElementById('userId').value || 'emp12345',
+                    userName: document.getElementById('userName').value || 'John Doe',
+                    userEmail: document.getElementById('userEmail').value || 'john.doe@company.com',
+                    env: getCurrentEnvironment()
                 };
                 
-                const params = new URLSearchParams({
-                    token: USER_ACCESS_TOKEN,
-                    env: getCurrentEnvironment(),
-                    userId: tempUserData.userId,
-                    userName: tempUserData.userName,
-                    userEmail: tempUserData.userEmail
-                });
+                const tooltipText = `🔐 SECURE POST AUTHENTICATION (Developer Info)
                 
-                const previewUrl = `${VERCEL_URL}/?${params.toString()}`;
-                this.setAttribute('title', previewUrl);
+URL: ${VERCEL_URL}/api/auth/login
+Method: POST
+Content-Type: application/json
+
+Payload:
+${JSON.stringify(payload, null, 2)}
+
+Security: Token sent in request body (not URL!)`;
+                
+                this.setAttribute('title', tooltipText);
             });
         }
 
-        // Handle form submission - directly open gift request system
-        document.getElementById('userForm').addEventListener('submit', function(e) {
+        // Handle form submission - use secure POST method
+        document.getElementById('userForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             // Get form values
@@ -745,18 +807,58 @@
             // Store in localStorage
             localStorage.setItem('mockAppUser', JSON.stringify(userData));
 
-            // Directly open gift request system (with environment parameter)
-            const url = buildGiftRequestUrl();
-            window.open(url, '_blank');
+            // Open new window FIRST (to avoid popup blockers)
+            const newWindow = window.open('about:blank', '_blank');
+            
+            if (!newWindow) {
+                alert('Please allow popups for this site');
+                return;
+            }
+
+            // Show loading message in new window
+            newWindow.document.write('<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2>🔐 Authenticating securely...</h2><p>Please wait while we verify your credentials.</p></body></html>');
+
+            try {
+                console.log('Attempting authentication to:', `${VERCEL_URL}/api/auth/login`);
+                console.log('Payload:', {
+                    token: USER_ACCESS_TOKEN,
+                    userId: userData.userId,
+                    userName: userData.userName,
+                    userEmail: userData.userEmail,
+                    env: getCurrentEnvironment()
+                });
+
+                // Send POST request with token in body (never in URL!)
+                const response = await fetch(`${VERCEL_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: USER_ACCESS_TOKEN,
+                        userId: userData.userId,
+                        userName: userData.userName,
+                        userEmail: userData.userEmail,
+                        env: getCurrentEnvironment()
+                    }),
+                    credentials: 'include' // Important: include cookies in request
+                });
+
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (response.ok && data.success) {
+                    // Redirect the new window to the app
+                    newWindow.location.href = `${VERCEL_URL}${data.redirectTo}`;
+                } else {
+                    newWindow.document.write(`<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2 style="color: #e53e3e;">❌ Authentication Failed</h2><p>${data.error || 'Unknown error'}</p><p style="color: #666; font-size: 0.9rem;">Check browser console (F12) for details</p></body></html>`);
+                }
+            } catch (error) {
+                console.error('Detailed auth error:', error);
+                newWindow.document.write(`<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2 style="color: #e53e3e;">❌ Connection Error</h2><p>Failed to connect to the server.</p><p style="color: #666; font-size: 0.9rem;">Error: ${error.message}</p><p style="color: #666; font-size: 0.9rem;">Check browser console (F12) for details</p></body></html>`);
+            }
         });
-
-
-        // Single Vercel deployment URL (switches database at runtime)
-        const VERCEL_URL = 'https://instant-jeanmarie-mariadassous-projects.vercel.app';
-
-        // Access tokens for secure access to gift system
-        const USER_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2';
-        const ADMIN_ACCESS_TOKEN = 'admin_access_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6';
 
         // Build gift request URL with parameters
         function buildGiftRequestUrl() {
