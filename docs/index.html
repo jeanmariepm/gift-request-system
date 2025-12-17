@@ -536,8 +536,42 @@
         // Check if user is logged into portal
         let isPortalLoggedIn = localStorage.getItem('portalLoggedIn') === 'true';
         
+        // Get selected environment (default to production) - declare early to avoid initialization errors
+        let selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'production';
+        
         // Get environment selector element
         const envSelect = document.getElementById('environmentSelect');
+        
+        // Update environment selector if it exists
+        if (envSelect) {
+            envSelect.value = selectedEnvironment;
+        }
+
+        // Get current environment identifier
+        function getCurrentEnvironment() {
+            selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'production';
+            return selectedEnvironment;
+        }
+
+        // Update environment badges on both tabs
+        function updateEnvironmentBadges() {
+            const env = getCurrentEnvironment();
+            const envName = env === 'production' ? '🚀 Production' : '🔧 Development';
+            const envClass = env === 'production' ? 'production' : 'development';
+            
+            const simulatorBadge = document.getElementById('simulator-env-badge');
+            const adminBadge = document.getElementById('admin-env-badge');
+            
+            if (simulatorBadge) {
+                simulatorBadge.textContent = envName;
+                simulatorBadge.className = `env-badge ${envClass}`;
+            }
+            
+            if (adminBadge) {
+                adminBadge.textContent = envName;
+                adminBadge.className = `env-badge ${envClass}`;
+            }
+        }
         
         // Show/hide sections based on portal login
         if (isPortalLoggedIn) {
@@ -719,40 +753,6 @@
 
         // Single Vercel deployment URL (switches database at runtime)
         const VERCEL_URL = 'https://instant-jeanmarie-mariadassous-projects.vercel.app';
-
-        // Get selected environment (default to production)
-        let selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'production';
-        
-        // Update environment selector if it exists (already declared above)
-        if (envSelect) {
-            envSelect.value = selectedEnvironment;
-        }
-
-        // Get current environment identifier
-        function getCurrentEnvironment() {
-            selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'production';
-            return selectedEnvironment;
-        }
-
-        // Update environment badges on both tabs
-        function updateEnvironmentBadges() {
-            const env = getCurrentEnvironment();
-            const envName = env === 'production' ? '🚀 Production' : '🔧 Development';
-            const envClass = env === 'production' ? 'production' : 'development';
-            
-            const simulatorBadge = document.getElementById('simulator-env-badge');
-            const adminBadge = document.getElementById('admin-env-badge');
-            
-            if (simulatorBadge) {
-                simulatorBadge.textContent = envName;
-                simulatorBadge.className = `env-badge ${envClass}`;
-            }
-            
-            if (adminBadge) {
-                adminBadge.textContent = envName;
-                adminBadge.className = `env-badge ${envClass}`;
-            }
-        }
 
         // Access tokens for secure access to gift system
         const USER_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2';
