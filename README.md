@@ -56,19 +56,21 @@ npm install
 
 2. **Set up environment variables:**
 
-Create a `.env` file in the root directory:
+Create a `.env.local` file in the root directory:
 
 ```env
-# Database
-DATABASE_URL="postgresql://username:password@localhost:5432/gifts_db?schema=public"
+# Database (use separate databases for dev and production)
+DATABASE_URL="postgresql://username:password@localhost:5432/gifts_dev?schema=public"
 
-# Admin Credentials (CHANGE THESE!)
-ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="your-secure-password-here"
+# Access Tokens (use different tokens for dev and production)
+USER_ACCESS_TOKEN="gift_access_dev_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2"
+ADMIN_ACCESS_TOKEN="admin_access_dev_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
 
-# Session Secret (generate a random string)
-SESSION_SECRET="your-secret-key-here"
+# Node Environment
+NODE_ENV="development"
 ```
+
+**IMPORTANT**: See `ENVIRONMENT_SETUP.md` for detailed security configuration and production setup.
 
 3. **Initialize the database:**
 
@@ -161,11 +163,13 @@ git push -u origin main
 - Go to [vercel.com](https://vercel.com)
 - Click "New Project"
 - Import your GitHub repository
-- Configure environment variables:
-  - `DATABASE_URL` - Your PostgreSQL connection string
-  - `ADMIN_USERNAME` - Your admin username
-  - `ADMIN_PASSWORD` - Your admin password
-  - `SESSION_SECRET` - A random secure string
+- Configure environment variables for **Production**:
+  - `DATABASE_URL` - Your production PostgreSQL connection string
+  - `USER_ACCESS_TOKEN` - Unique production user token (generate with `openssl rand -hex 32`)
+  - `ADMIN_ACCESS_TOKEN` - Unique production admin token (generate with `openssl rand -hex 32`)
+  - `NODE_ENV` - Set to `production`
+
+**CRITICAL**: Use different tokens for production than development! See `ENVIRONMENT_SETUP.md` for details.
 
 3. **Deploy:**
 

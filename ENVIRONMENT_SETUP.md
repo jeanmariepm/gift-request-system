@@ -1,156 +1,244 @@
 # Environment Setup Guide
 
-## 🌍 Environments
+This document explains how to configure environment variables for secure deployment across different environments.
 
-This project uses two separate environments:
+## Security Architecture
 
-### 1. Development (Local)
-- **Purpose**: Testing and development
-- **Database**: Separate development database on Neon
-- **Config**: `.env.local` file
-- **Access**: Only you
+The Gifts App uses **environment-specific access tokens** and **separate databases** for each environment:
 
-### 2. Production (Vercel)
-- **Purpose**: Live application
-- **Database**: Production database on Neon
-- **Config**: Vercel environment variables
-- **Access**: End users
+- **Local/Development**: Uses dev tokens and dev database
+- **Production**: Uses production tokens and production database
+
+**Critical**: Production tokens should NEVER be accessible from local or development environments.
 
 ---
 
-## 📝 Setup Instructions
+## Required Environment Variables
 
-### Initial Setup
+### 1. DATABASE_URL
+PostgreSQL connection string for the database.
 
-#### 1. Create Development Database
-
-**Option A: New Neon Database**
-1. Go to https://console.neon.tech
-2. Create a new project: "gifts-dev"
-3. Copy the connection string
-
-**Option B: Local SQLite (for quick testing)**
+**Local/Development**:
 ```bash
-# Use SQLite for local dev
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://username:password@localhost:5432/gifts_dev?schema=public"
 ```
 
-#### 2. Configure Local Environment
-
-Edit `.env.local` with your dev database URL:
+**Production** (Set in Vercel):
 ```bash
-DATABASE_URL="postgresql://user:pass@host/gifts_dev?sslmode=require"
-ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="admin123"
-SESSION_SECRET="dev-secret-12345"
-NEXT_PUBLIC_ACCESS_TOKEN="gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2"
-NEXT_PUBLIC_ADMIN_ACCESS_TOKEN="admin_access_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+DATABASE_URL="postgresql://prod_user:prod_pass@prod-host:5432/gifts_prod?schema=public"
 ```
 
-#### 3. Initialize Development Database
+### 2. USER_ACCESS_TOKEN
+Token for user authentication to access the Gifts App.
 
+**Local/Development**:
 ```bash
-# Generate Prisma client
-npx prisma generate
-
-# Push schema to dev database
-npx prisma db push
-
-# (Optional) Seed with test data
-npx prisma db seed
+USER_ACCESS_TOKEN="gift_access_dev_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2"
 ```
 
-#### 4. Verify Production is Separate
+**Production** (Set in Vercel):
+```bash
+USER_ACCESS_TOKEN="gift_access_prod_<GENERATE_UNIQUE_32_CHAR_STRING>"
+```
 
-**Vercel Environment Variables** (already set):
-- `DATABASE_URL` → Production Neon database
-- `ADMIN_USERNAME` → admin
-- `ADMIN_PASSWORD` → admin123
-- `SESSION_SECRET` → (your production secret)
-- `NEXT_PUBLIC_ACCESS_TOKEN` → (your token)
-- `NEXT_PUBLIC_ADMIN_ACCESS_TOKEN` → (your admin token)
+### 3. ADMIN_ACCESS_TOKEN
+Token for admin authentication to access the Admin Panel.
+
+**Local/Development**:
+```bash
+ADMIN_ACCESS_TOKEN="admin_access_dev_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6"
+```
+
+**Production** (Set in Vercel):
+```bash
+ADMIN_ACCESS_TOKEN="admin_access_prod_<GENERATE_UNIQUE_32_CHAR_STRING>"
+```
+
+### 4. NODE_ENV
+Environment identifier.
+
+```bash
+NODE_ENV="development"  # or "production"
+```
 
 ---
 
-## 🚀 Usage
+## Setup Instructions
 
-### Local Development
+### Local Development Setup
+
+1. **Copy the example file**:
+   ```bash
+   cp env.example .env.local
+   ```
+
+2. **Generate secure tokens** (optional, dev tokens provided):
+   ```bash
+   # Generate User Access Token
+   echo "USER_ACCESS_TOKEN=\"gift_access_dev_$(openssl rand -hex 32)\""
+   
+   # Generate Admin Access Token
+   echo "ADMIN_ACCESS_TOKEN=\"admin_access_dev_$(openssl rand -hex 32)\""
+   ```
+
+3. **Update `.env.local`** with your local database URL and tokens.
+
+4. **Run database migrations**:
+   ```bash
+   npx prisma migrate dev
+   ```
+
+5. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
+
+### Production Setup (Vercel)
+
+1. **Go to Vercel Dashboard** → Your Project → Settings → Environment Variables
+
+2. **Add the following environment variables** for **Production**:
+
+   | Variable Name | Value | Environment |
+   |---------------|-------|-------------|
+   | `DATABASE_URL` | Your production PostgreSQL connection string | Production |
+   | `USER_ACCESS_TOKEN` | Unique production user token | Production |
+   | `ADMIN_ACCESS_TOKEN` | Unique production admin token | Production |
+   | `NODE_ENV` | `production` | Production |
+
+3. **Generate unique production tokens**:
+   ```bash
+   # Run locally to generate tokens, then copy to Vercel
+   openssl rand -hex 32
+   openssl rand -hex 32
+   ```
+
+4. **IMPORTANT**: 
+   - Production tokens must be **different** from dev tokens
+   - Never commit production tokens to Git
+   - Never use production tokens in local development
+
+### Development Environment Setup (Vercel Preview)
+
+For the Vercel Preview environment (`dev` branch):
+
+1. **Add environment variables** for **Preview**:
+
+   | Variable Name | Value | Environment |
+   |---------------|-------|-------------|
+   | `DATABASE_URL` | Your dev PostgreSQL connection string | Preview |
+   | `USER_ACCESS_TOKEN` | Dev user token (same as local) | Preview |
+   | `ADMIN_ACCESS_TOKEN` | Dev admin token (same as local) | Preview |
+   | `NODE_ENV` | `development` | Preview |
+
+2. **Use the same dev tokens** as local development for consistency.
+
+---
+
+## Mock App Configuration
+
+The mock app (`docs/index.html`) needs to know the correct tokens to authenticate with the Gifts App.
+
+### Token Configuration in Mock App
+
+The mock app has **separate tokens** for each environment:
+
+```javascript
+const ACCESS_TOKENS = {
+    dev: {
+        user: 'gift_access_dev_...',
+        admin: 'admin_access_dev_...'
+    },
+    prod: {
+        user: 'gift_access_prod_...',
+        admin: 'admin_access_prod_...'
+    }
+};
+```
+
+### For Production Deployment
+
+When deploying the mock app for production use:
+
+1. **Update the production tokens** in `docs/index.html`
+2. **Deploy the mock app** separately (not in the same repo/deployment)
+3. **Secure the mock app** with appropriate access controls
+
+---
+
+## Security Best Practices
+
+✅ **DO**:
+- Use different tokens for dev and production
+- Use different databases for dev and production
+- Store production secrets only in Vercel dashboard
+- Generate tokens using cryptographically secure methods
+- Rotate tokens periodically
+
+❌ **DON'T**:
+- Never commit `.env`, `.env.local`, or `.env.production` to Git
+- Never use production tokens in local development
+- Never share production tokens via insecure channels
+- Never hardcode tokens in the codebase
+
+---
+
+## Verifying Your Setup
+
+### Local Environment
+
 ```bash
-# Uses .env.local (dev database)
+# Check if tokens are loaded
 npm run dev
+
+# Look for these warnings in the console
+# ✓ Tokens loaded successfully (no warnings)
+# ✗ If you see "WARNING: Access tokens not configured", check your .env.local
 ```
 
-### Production (Vercel)
-```bash
-# Uses Vercel environment variables (prod database)
-git push
-# Vercel auto-deploys
-```
+### Production Environment
 
-### Test Production Build Locally
-```bash
-# Uses .env.production.local or .env.local
-npm run build
-npm start
-```
+1. Deploy to Vercel
+2. Check deployment logs for any token warnings
+3. Test authentication from the mock app
+4. Verify you can access both user and admin interfaces
 
 ---
 
-## 🔍 Verify Separation
+## Troubleshooting
 
-### Check which database you're using:
-```bash
-# In your app code (for debugging)
-console.log('Database:', process.env.DATABASE_URL?.substring(0, 30) + '...')
-```
+### "Invalid or missing access token" error
 
-### Common Issues:
+**Cause**: Token mismatch between mock app and Gifts App.
 
-**Problem**: Local dev using production database
-**Solution**: Check `.env.local` exists and has correct DATABASE_URL
+**Solution**:
+1. Check that environment variables are set in Vercel
+2. Verify the mock app is using the correct token for the environment
+3. Ensure the environment selector in the mock app matches the deployment
 
-**Problem**: Vercel using wrong database
-**Solution**: Check Vercel dashboard → Project → Settings → Environment Variables
+### "Access Denied" after successful login
 
----
+**Cause**: Cookie not being set properly (cross-origin issue).
 
-## 📊 Database Management
+**Solution**:
+1. For remote environments (Dev/Prod), the app uses direct URL navigation
+2. Ensure the middleware is running and validating tokens
+3. Check browser console for cookie-related errors
 
-### View Dev Database:
-```bash
-npx prisma studio
-```
+### Database connection errors
 
-### Reset Dev Database:
-```bash
-npx prisma db push --force-reset
-```
+**Cause**: Invalid or missing `DATABASE_URL`.
 
-### Backup Production Database:
-Use Neon's built-in backup feature in the dashboard
+**Solution**:
+1. Verify the connection string format is correct
+2. Ensure the database server is accessible from the deployment environment
+3. Check that the database exists and has the correct schema
 
 ---
 
-## 🔐 Security
+## Questions?
 
-- ✅ `.env.local` is in `.gitignore` (not committed)
-- ✅ Production secrets are in Vercel (encrypted)
-- ✅ Never commit database URLs or secrets to git
-
----
-
-## 📁 File Priority (Next.js)
-
-Next.js loads environment variables in this order:
-
-1. `.env.local` (highest priority, gitignored)
-2. `.env.production.local` (production build, gitignored)
-3. `.env.development.local` (development, gitignored)
-4. `.env.production` (production, can be committed)
-5. `.env.development` (development, can be committed)
-6. `.env` (lowest priority, can be committed)
-
-For this project:
-- **Development**: Uses `.env.local`
-- **Production**: Uses Vercel environment variables
-
+If you encounter issues or need clarification, refer to:
+- `SECURITY_IMPLEMENTATION.md` - Security architecture details
+- `README.md` - General project setup
+- Vercel documentation on environment variables

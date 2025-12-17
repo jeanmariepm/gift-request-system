@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const REQUIRED_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2'
-const REQUIRED_ADMIN_TOKEN = 'admin_access_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6'
+// Load access tokens from environment variables
+// Separate tokens for dev and production environments
+const REQUIRED_ACCESS_TOKEN = process.env.USER_ACCESS_TOKEN || ''
+const REQUIRED_ADMIN_TOKEN = process.env.ADMIN_ACCESS_TOKEN || ''
+
+if (!REQUIRED_ACCESS_TOKEN || !REQUIRED_ADMIN_TOKEN) {
+  console.error('WARNING: Access tokens not configured. Set USER_ACCESS_TOKEN and ADMIN_ACCESS_TOKEN environment variables.')
+}
 
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl
