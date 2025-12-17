@@ -275,7 +275,7 @@ export default function FormPage() {
               Submit Another Request
             </button>
             <Link href={`/my-submissions?token=${accessToken}&userId=${userId}&userName=${userName}&userEmail=${userEmail}`}>
-              <button className="btn btn-secondary">
+              <button className="btn btn-primary">
                 View My Submissions
               </button>
             </Link>
