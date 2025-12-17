@@ -28,6 +28,12 @@ yarn-error.log*
 .env*.local
 .env
 
+# Environment configuration files (keep env.example, env.preview, env.production tracked for now)
+# Add these to .gitignore if they contain real secrets:
+# env.production
+# env.preview
+.env.vercel.*
+
 # vercel
 .vercel
 
