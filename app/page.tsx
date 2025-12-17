@@ -337,12 +337,15 @@ export default function FormPage() {
       <div className="container">
         <Logo />
         
-        <div className="card">
-          <h2>✅ Submission Successful!</h2>
+        <div className="card confirmation-card">
+          <h2 style={{ textAlign: 'center' }}>✅ Submission Successful!</h2>
           <div className="alert alert-success">
             Your gift request has been submitted successfully and is now pending approval.
           </div>
-          <div className="btn-group">
+          <div className="alert alert-info" style={{ marginTop: '1rem' }}>
+            📧 You will be notified via email when your reward is about to be processed. At that time, you will be asked to provide payment details to complete the transaction.
+          </div>
+          <div className="confirmation-buttons">
             <button 
               onClick={() => {
                 setShowConfirmation(false)
