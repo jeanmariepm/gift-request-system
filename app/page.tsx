@@ -269,7 +269,10 @@ export default function FormPage() {
           </div>
           <div className="btn-group">
             <button 
-              onClick={() => setShowConfirmation(false)}
+              onClick={() => {
+                setShowConfirmation(false)
+                setShowForm(true)
+              }}
               className="btn btn-primary"
             >
               Submit Another Request
