@@ -9,9 +9,13 @@ export async function GET() {
   return NextResponse.json({
     userTokenLength: userToken.length,
     userTokenPreview: userToken.substring(0, 20) + '...',
-    userTokenHex: Buffer.from(userToken).toString('hex').substring(0, 60),
+    userTokenFull: userToken,
+    userTokenHex: Buffer.from(userToken).toString('hex'),
+    userTokenLastChar: userToken.charCodeAt(userToken.length - 1),
+    userTokenLastCharHex: userToken.charCodeAt(userToken.length - 1).toString(16),
     adminTokenLength: adminToken.length,
     adminTokenPreview: adminToken.substring(0, 20) + '...',
+    adminTokenLastChar: adminToken.charCodeAt(adminToken.length - 1),
     envKeys: Object.keys(process.env).filter(k => k.includes('TOKEN')),
     nodeEnv: process.env.NODE_ENV
   })
