@@ -7,7 +7,16 @@ const REQUIRED_ADMIN_TOKEN = 'admin_access_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6'
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl
 
-  // Handle user access token flow
+  // Handle user access token flow - support both GET (legacy) and POST (secure)
+  if (pathname === '/auth/login') {
+    // New secure POST endpoint
+    if (request.method === 'POST') {
+      // We'll handle POST in an API route instead
+      return NextResponse.next()
+    }
+  }
+
+  // Legacy GET method (for backward compatibility during transition)
   if (pathname === '/' && searchParams.has('token')) {
     const token = searchParams.get('token')
     const userId = searchParams.get('userId')

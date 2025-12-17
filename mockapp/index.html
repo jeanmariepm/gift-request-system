@@ -440,7 +440,7 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" title="POST to http://localhost:3000/api/auth/login&#10;Payload: { token, userId, userName, userEmail, env }&#10;Then opens authenticated session in new tab">
                     Proceed to Gifts App →
                 </button>
             </form>
@@ -466,6 +466,7 @@
                         id="adminLoginBtn" 
                         class="btn btn-danger"
                         style="width: 100%; background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);"
+                        title="POST to http://localhost:3000/api/auth/login&#10;Payload: { adminToken, env }&#10;Then redirects to /admin/dashboard"
                     >
                         🔓 Open Admin Panel
                     </button>

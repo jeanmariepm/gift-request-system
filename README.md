@@ -227,7 +227,6 @@ const giftRequestUrl = `https://your-app.vercel.app/?userId=${user.id}&userName=
 2. **Session Secret**: Use a strong random string for SESSION_SECRET
 3. **Database**: Use SSL in production (add `?sslmode=require` to DATABASE_URL)
 4. **User Data**: This app assumes users are authenticated in your main app
-5. **CORS**: Configure if your main app is on a different domain
 
 ## Customization
 

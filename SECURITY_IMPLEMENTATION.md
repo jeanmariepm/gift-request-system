@@ -85,13 +85,28 @@ const userId = sessionData.userId
 
 ## User Flow
 
-### User Access Flow:
-1. User clicks link in mock app: `https://app.vercel.app/?token=abc&userId=emp123&...`
+### User Access Flow (Secure POST Method):
+1. User clicks "Proceed to Gifts App" in mock app
+2. **JavaScript sends POST request** to `/api/auth/login` with token in request body
+3. Server validates token (token never appears in URL!)
+4. Server creates secure HTTP-only session cookie
+5. Server responds with redirect URL
+6. JavaScript redirects browser to clean URL: `https://app.vercel.app/`
+7. Page loads, fetches session from `/api/session`
+8. User sees their data, URL is clean, no parameters ever visible
+
+**Key Security Improvement:** Token travels in POST body, **never in URL**
+- ✅ No browser history pollution
+- ✅ No server access logs with tokens
+- ✅ No Referer header leakage
+- ✅ No screenshot/recording exposure
+
+### Legacy GET Method (Backward Compatibility):
+For transition period, GET method with URL parameters still works but is deprecated:
+1. User clicks link: `https://app.vercel.app/?token=abc&userId=emp123&...`
 2. Middleware intercepts, validates token
 3. Middleware stores data in secure cookie
-4. Middleware redirects to: `https://app.vercel.app/` (clean URL)
-5. Page loads, fetches session from `/api/session`
-6. User sees their data, but URL is clean
+4. Middleware redirects to clean URL (but parameters were briefly visible)
 
 ### Admin Access Flow:
 1. Admin clicks link in mock app: `https://app.vercel.app/admin?adminToken=xyz&env=production`
@@ -103,13 +118,29 @@ const userId = sessionData.userId
 
 ## Security Benefits
 
-1. **No Exposed Tokens**: Tokens are validated once and never appear in the browser
-2. **No Visible User Data**: User information is not in the URL
-3. **HTTP-Only Cookies**: Cannot be accessed via JavaScript (XSS protection)
-4. **Secure Transmission**: Cookies only sent over HTTPS in production
-5. **CSRF Protection**: SameSite cookie attribute prevents cross-site requests
-6. **Automatic Expiration**: Sessions expire after set time
-7. **Server-Side Validation**: All validation happens server-side, not client-side
+### POST Authentication (Recommended)
+1. **Token Never in URL**: Travels in request body only
+2. **No Browser History Pollution**: Clean URLs from the start
+3. **No Server Log Exposure**: Tokens not logged in access logs
+4. **No Referer Leakage**: Token not sent in Referer header
+5. **No Visual Exposure**: Can't be screenshot or recorded
+6. **HTTP-Only Cookies**: Cannot be accessed via JavaScript (XSS protection)
+7. **Secure Transmission**: Cookies only sent over HTTPS in production
+8. **CSRF Protection**: SameSite cookie attribute prevents cross-site requests
+9. **Automatic Expiration**: Sessions expire after set time
+10. **Server-Side Validation**: All validation happens server-side
+
+### Comparison: POST vs GET
+
+| Security Aspect | GET (Legacy) | POST (Secure) |
+|----------------|--------------|---------------|
+| Token in URL | ❌ Yes (briefly) | ✅ Never |
+| Browser History | ❌ Contains token | ✅ Clean |
+| Server Logs | ❌ Contains token | ✅ Clean |
+| Referer Header | ❌ May leak token | ✅ No leakage |
+| Screenshot Safe | ❌ No | ✅ Yes |
+| Browser Extensions | ❌ Can intercept | ✅ Body only |
+| Network Inspection | ❌ Visible | ⚠️ Visible in body |
 
 ## Testing
 
