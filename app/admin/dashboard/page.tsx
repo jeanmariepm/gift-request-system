@@ -28,6 +28,7 @@ export default function AdminDashboardPage() {
   const [error, setError] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'Pending' | 'Processed' | 'Cancelled'>('all')
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null)
+  const [sortBy, setSortBy] = useState<'date' | 'user' | 'recipientEmail'>('date')
 
   useEffect(() => {
     fetchSubmissions()
@@ -83,9 +84,33 @@ export default function AdminDashboardPage() {
     window.close()
   }
 
-  const filteredSubmissions = filterStatus === 'all' 
-    ? submissions 
-    : submissions.filter(s => s.status === filterStatus)
+  const handleFilterClick = (status: 'all' | 'Pending' | 'Processed' | 'Cancelled') => {
+    setFilterStatus(status)
+  }
+
+  const sortSubmissions = (subs: Submission[]) => {
+    const sorted = [...subs]
+    switch (sortBy) {
+      case 'date':
+        return sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      case 'user':
+        return sorted.sort((a, b) => a.userName.localeCompare(b.userName))
+      case 'recipientEmail':
+        return sorted.sort((a, b) => {
+          const emailA = a.recipientEmail || ''
+          const emailB = b.recipientEmail || ''
+          return emailA.localeCompare(emailB)
+        })
+      default:
+        return sorted
+    }
+  }
+
+  const filteredSubmissions = sortSubmissions(
+    filterStatus === 'all' 
+      ? submissions 
+      : submissions.filter(s => s.status === filterStatus)
+  )
 
   const stats = {
     total: submissions.length,
@@ -109,39 +134,100 @@ export default function AdminDashboardPage() {
       </div>
       
       <div className="card">
-        {/* Stats */}
+        {/* Clickable Stats Cards for Filtering */}
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: '180px', background: '#f7fafc', padding: '1.5rem', borderRadius: '8px' }}>
-            <h3 style={{ fontSize: '2rem', margin: 0, color: '#667eea' }}>{stats.total}</h3>
-            <p style={{ margin: '0.5rem 0 0 0', color: '#666' }}>Total</p>
+          <div 
+            onClick={() => handleFilterClick('all')}
+            style={{ 
+              flex: 1, 
+              minWidth: '180px', 
+              background: filterStatus === 'all' ? '#667eea' : '#f7fafc', 
+              padding: '1.5rem', 
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              border: filterStatus === 'all' ? '3px solid #667eea' : '3px solid transparent'
+            }}
+          >
+            <h3 style={{ fontSize: '2rem', margin: 0, color: filterStatus === 'all' ? 'white' : '#667eea' }}>{stats.total}</h3>
+            <p style={{ margin: '0.5rem 0 0 0', color: filterStatus === 'all' ? 'white' : '#666' }}>Total</p>
           </div>
-          <div style={{ flex: 1, minWidth: '180px', background: '#fef3c7', padding: '1.5rem', borderRadius: '8px' }}>
-            <h3 style={{ fontSize: '2rem', margin: 0, color: '#92400e' }}>{stats.pending}</h3>
-            <p style={{ margin: '0.5rem 0 0 0', color: '#666' }}>Pending</p>
+          <div 
+            onClick={() => handleFilterClick('Pending')}
+            style={{ 
+              flex: 1, 
+              minWidth: '180px', 
+              background: filterStatus === 'Pending' ? '#f59e0b' : '#fef3c7', 
+              padding: '1.5rem', 
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              border: filterStatus === 'Pending' ? '3px solid #f59e0b' : '3px solid transparent'
+            }}
+          >
+            <h3 style={{ fontSize: '2rem', margin: 0, color: filterStatus === 'Pending' ? 'white' : '#92400e' }}>{stats.pending}</h3>
+            <p style={{ margin: '0.5rem 0 0 0', color: filterStatus === 'Pending' ? 'white' : '#666' }}>Pending</p>
           </div>
-          <div style={{ flex: 1, minWidth: '180px', background: '#d1fae5', padding: '1.5rem', borderRadius: '8px' }}>
-            <h3 style={{ fontSize: '2rem', margin: 0, color: '#065f46' }}>{stats.processed}</h3>
-            <p style={{ margin: '0.5rem 0 0 0', color: '#666' }}>Processed</p>
+          <div 
+            onClick={() => handleFilterClick('Processed')}
+            style={{ 
+              flex: 1, 
+              minWidth: '180px', 
+              background: filterStatus === 'Processed' ? '#10b981' : '#d1fae5', 
+              padding: '1.5rem', 
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              border: filterStatus === 'Processed' ? '3px solid #10b981' : '3px solid transparent'
+            }}
+          >
+            <h3 style={{ fontSize: '2rem', margin: 0, color: filterStatus === 'Processed' ? 'white' : '#065f46' }}>{stats.processed}</h3>
+            <p style={{ margin: '0.5rem 0 0 0', color: filterStatus === 'Processed' ? 'white' : '#666' }}>Processed</p>
           </div>
-          <div style={{ flex: 1, minWidth: '180px', background: '#fed7d7', padding: '1.5rem', borderRadius: '8px' }}>
-            <h3 style={{ fontSize: '2rem', margin: 0, color: '#c53030' }}>{stats.cancelled}</h3>
-            <p style={{ margin: '0.5rem 0 0 0', color: '#666' }}>Cancelled</p>
+          <div 
+            onClick={() => handleFilterClick('Cancelled')}
+            style={{ 
+              flex: 1, 
+              minWidth: '180px', 
+              background: filterStatus === 'Cancelled' ? '#ef4444' : '#fed7d7', 
+              padding: '1.5rem', 
+              borderRadius: '8px',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              border: filterStatus === 'Cancelled' ? '3px solid #ef4444' : '3px solid transparent'
+            }}
+          >
+            <h3 style={{ fontSize: '2rem', margin: 0, color: filterStatus === 'Cancelled' ? 'white' : '#c53030' }}>{stats.cancelled}</h3>
+            <p style={{ margin: '0.5rem 0 0 0', color: filterStatus === 'Cancelled' ? 'white' : '#666' }}>Cancelled</p>
           </div>
         </div>
 
-        {/* Filters */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ marginRight: '1rem', fontWeight: 600 }}>Filter by Status:</label>
-          <select 
-            value={filterStatus} 
-            onChange={(e) => setFilterStatus(e.target.value as any)}
-            style={{ padding: '0.5rem', borderRadius: '8px', border: '2px solid #e2e8f0' }}
-          >
-            <option value="all">All</option>
-            <option value="Pending">Pending</option>
-            <option value="Processed">Processed</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
+        {/* Sort Options */}
+        <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <label style={{ fontWeight: 600 }}>Sort by:</label>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button
+              onClick={() => setSortBy('date')}
+              className={`btn btn-small ${sortBy === 'date' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+            >
+              Date
+            </button>
+            <button
+              onClick={() => setSortBy('user')}
+              className={`btn btn-small ${sortBy === 'user' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+            >
+              User
+            </button>
+            <button
+              onClick={() => setSortBy('recipientEmail')}
+              className={`btn btn-small ${sortBy === 'recipientEmail' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+            >
+              Recipient Email
+            </button>
+          </div>
         </div>
 
         {error && (
