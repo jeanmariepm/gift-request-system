@@ -30,12 +30,23 @@ export function middleware(request: NextRequest) {
     const userEmail = searchParams.get('userEmail')
     const env = searchParams.get('env') || 'production'
 
+    // Debug logging
+    console.log('User token validation:', {
+      receivedToken: token?.substring(0, 30) + '...',
+      receivedTokenLength: token?.length,
+      expectedToken: REQUIRED_ACCESS_TOKEN?.substring(0, 30) + '...',
+      expectedTokenLength: REQUIRED_ACCESS_TOKEN?.length,
+      matches: token === REQUIRED_ACCESS_TOKEN
+    })
+
     // Validate token
     if (token !== REQUIRED_ACCESS_TOKEN) {
       // Invalid token - redirect to access denied
+      console.log('Token validation failed - redirecting to access denied')
       const response = NextResponse.redirect(new URL('/access-denied', request.url))
       return response
     }
+    console.log('Token validation succeeded')
 
     // Valid token - store user data in secure cookie and redirect to clean URL
     if (userId && userName) {
