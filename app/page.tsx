@@ -284,13 +284,19 @@ export default function FormPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="message">Message (Optional)</label>
+              <label htmlFor="message">
+                Message (Optional)
+                <span style={{ float: 'right', fontSize: '0.875rem', color: message.length > 1000 ? '#e53e3e' : '#718096' }}>
+                  {message.length}/1000 characters
+                </span>
+              </label>
               <textarea
                 id="message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Add a personal message..."
                 rows={4}
+                maxLength={1000}
               />
             </div>
 

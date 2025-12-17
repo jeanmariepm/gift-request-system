@@ -40,6 +40,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
     
+    // Validate message length
+    if (message && message.length > 1000) {
+      return NextResponse.json({ error: 'Message must be 1000 characters or less' }, { status: 400 })
+    }
+    
     // Use a default email if not provided
     const finalUserEmail = userEmail || `${userId}@company.com`
     

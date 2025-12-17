@@ -17,6 +17,11 @@ export async function PUT(
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
     
+    // Validate message length
+    if (message && message.length > 1000) {
+      return NextResponse.json({ error: 'Message must be 1000 characters or less' }, { status: 400 })
+    }
+    
     // Get appropriate database based on environment
     const dbUrl = getDatabaseUrl(env)
     const prisma = getPrismaClient(dbUrl)
