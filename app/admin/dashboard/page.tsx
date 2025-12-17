@@ -260,9 +260,9 @@ export default function AdminDashboardPage() {
                   <th 
                     onClick={() => setSortBy('date')}
                     style={{ cursor: 'pointer', userSelect: 'none' }}
-                    title="Click to sort by date"
+                    title="Click to sort by date and time"
                   >
-                    Date {sortBy === 'date' && '↓'}
+                    Date & Time {sortBy === 'date' && '↓'}
                   </th>
                   <th 
                     onClick={() => setSortBy('user')}
@@ -288,7 +288,7 @@ export default function AdminDashboardPage() {
               <tbody>
                 {filteredSubmissions.map((submission) => (
                   <tr key={submission.id}>
-                    <td>{new Date(submission.createdAt).toLocaleDateString()}</td>
+                    <td>{new Date(submission.createdAt).toLocaleString()}</td>
                     <td>
                       <div>{submission.userName}</div>
                       <div style={{ fontSize: '0.875rem', color: '#666' }}>{submission.userEmail}</div>
