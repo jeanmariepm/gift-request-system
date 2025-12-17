@@ -374,7 +374,7 @@ export default function FormPage() {
       <div className="card">
         <div className="card-header">
           <div>
-            <h2>Welcome, {userName}!</h2>
+            <h2>Hi, {userName}!</h2>
             <p className="subtitle">Manage your gift requests below:</p>
           </div>
           <div className="header-buttons">
