@@ -359,3 +359,69 @@ h2 {
   }
 }
 
+/* Inline Editing Styles */
+.editable-row {
+  background-color: #FFF9E6; /* Light yellow background for editable rows */
+}
+
+.editable-row:hover {
+  background: #FFF4CC !important; /* Slightly darker yellow on hover */
+}
+
+.non-editable-row {
+  background-color: #F5F5F5; /* Light gray for non-editable rows */
+}
+
+.non-editable-row:hover {
+  background: #EEEEEE !important; /* Slightly darker gray on hover */
+}
+
+.editable-cell {
+  cursor: pointer;
+  position: relative;
+}
+
+.editable-cell:not(:has(input)):not(:has(select))::after {
+  content: ' ✏️';
+  font-size: 0.75rem;
+  opacity: 0.5;
+  margin-left: 0.25rem;
+}
+
+.non-editable-cell {
+  background-color: transparent;
+}
+
+.inline-edit-input,
+.inline-edit-input:focus {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #3498DB;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  background: white;
+  box-sizing: border-box;
+}
+
+.inline-edit-input:focus {
+  outline: none;
+  border-color: #1B4F72;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.btn-small {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.875rem;
+  min-width: auto;
+}
+
+.btn-success {
+  background: #48BB78;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #38A169;
+}
+
