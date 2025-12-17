@@ -61,6 +61,9 @@ export default function FormPage() {
   useEffect(() => {
     const fetchSession = async () => {
       try {
+        // Small delay to ensure cookie is fully set after redirect
+        await new Promise(resolve => setTimeout(resolve, 100))
+        
         const response = await fetch('/api/session')
         if (!response.ok) {
           router.push('/access-denied')

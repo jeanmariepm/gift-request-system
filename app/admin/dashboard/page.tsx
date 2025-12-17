@@ -36,6 +36,9 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     const fetchSession = async () => {
       try {
+        // Small delay to ensure cookie is fully set after redirect
+        await new Promise(resolve => setTimeout(resolve, 100))
+        
         console.log('Fetching admin session...')
         const response = await fetch('/api/admin/session', {
           credentials: 'include' // Explicitly include cookies
