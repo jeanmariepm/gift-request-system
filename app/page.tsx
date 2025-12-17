@@ -423,13 +423,12 @@ export default function FormPage() {
             <table className="table">
               <thead>
                 <tr>
-                  <th>Date</th>
+                  <th>Date & Time</th>
                   <th>Duration</th>
                   <th>Recipient Username</th>
                   <th>Recipient Name</th>
                   <th>Recipient Email</th>
                   <th>Status</th>
-                  <th>Message</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -439,7 +438,7 @@ export default function FormPage() {
                   
                   return (
                     <tr key={submission.id}>
-                      <td>{new Date(submission.createdAt).toLocaleDateString()}</td>
+                      <td>{new Date(submission.createdAt).toLocaleString()}</td>
                       <td>{submission.giftType}</td>
                       <td>{submission.recipientUsername || '-'}</td>
                       <td>{submission.recipientName}</td>
@@ -449,7 +448,6 @@ export default function FormPage() {
                           {submission.status}
                         </span>
                       </td>
-                      <td>{submission.message || '-'}</td>
                       <td>
                         {isPending && (
                           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
@@ -513,8 +511,8 @@ export default function FormPage() {
                   </div>
                   
                   <div className="mobile-card-field">
-                    <label>Date:</label>
-                    <span>{new Date(submission.createdAt).toLocaleDateString()}</span>
+                    <label>Date & Time:</label>
+                    <span>{new Date(submission.createdAt).toLocaleString()}</span>
                   </div>
                   
                   <div className="mobile-card-field">
@@ -535,11 +533,6 @@ export default function FormPage() {
                   <div className="mobile-card-field">
                     <label>Recipient Username:</label>
                     <span>{submission.recipientUsername || '-'}</span>
-                  </div>
-                  
-                  <div className="mobile-card-field">
-                    <label>Message:</label>
-                    <span>{submission.message || '-'}</span>
                   </div>
                 </div>
               )
