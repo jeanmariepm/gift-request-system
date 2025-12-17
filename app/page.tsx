@@ -279,7 +279,7 @@ export default function FormPage() {
             </button>
             <button 
               onClick={() => setShowConfirmation(false)}
-              className="btn btn-primary"
+              className="btn btn-secondary"
             >
               View My Submissions
             </button>
