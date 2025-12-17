@@ -700,68 +700,46 @@
             document.getElementById('userEmail').value = userData.userEmail || '';
         }
 
-                // Add detailed POST info on hover for admin button (for developers)
+                // Add detailed info on hover for admin button (for developers)
                 const adminBtn = document.getElementById('adminLoginBtn');
                 if (adminBtn) {
                     adminBtn.addEventListener('mouseenter', function() {
-                        const payload = {
+                        const params = new URLSearchParams({
                             adminToken: ADMIN_ACCESS_TOKEN,
                             env: getCurrentEnvironment()
-                        };
+                        });
                         
-                        const tooltipText = `🔐 SECURE ADMIN POST AUTHENTICATION (Developer Info)
+                        const tooltipText = `🔐 ADMIN AUTHENTICATION (Developer Info)
                         
-URL: ${VERCEL_URL}/api/auth/login
-Method: POST
-Content-Type: application/json
+URL: ${VERCEL_URL}/admin?${params.toString()}
 
-Payload:
-${JSON.stringify(payload, null, 2)}
+Flow:
+1. Browser navigates to /admin with token parameter
+2. Middleware validates token and sets secure cookie
+3. Middleware redirects to /admin/dashboard (clean URL)
+4. Token removed from URL - only cookie remains
 
-Security: Admin token sent in request body (not URL!)`;
+Security: Cookie is HTTP-only, not accessible via JavaScript`;
                         
                         this.setAttribute('title', tooltipText);
                     });
                 }
 
-        // Handle admin login button click - use secure POST method
-        document.getElementById('adminLoginBtn').addEventListener('click', async function() {
-            // Open new window FIRST (to avoid popup blockers)
-            const newWindow = window.open('about:blank', '_blank');
+        // Handle admin login button click
+        document.getElementById('adminLoginBtn').addEventListener('click', function() {
+            // Build admin auth URL (token will be validated by middleware, then removed from URL)
+            const params = new URLSearchParams({
+                adminToken: ADMIN_ACCESS_TOKEN,
+                env: getCurrentEnvironment()
+            });
+            
+            const adminUrl = `${VERCEL_URL}/admin?${params.toString()}`;
+            
+            // Open in new window/tab
+            const newWindow = window.open(adminUrl, '_blank');
             
             if (!newWindow) {
-                alert('Please allow popups for this site');
-                return;
-            }
-
-            // Show loading message
-            newWindow.document.write('<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2>🔐 Authenticating admin access...</h2><p>Please wait while we verify your admin credentials.</p></body></html>');
-
-            try {
-                // Send POST request with admin token in body (never in URL!)
-                const response = await fetch(`${VERCEL_URL}/api/auth/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        adminToken: ADMIN_ACCESS_TOKEN,
-                        env: getCurrentEnvironment()
-                    }),
-                    credentials: 'include' // Important: include cookies
-                });
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    // Redirect to admin dashboard
-                    newWindow.location.href = `${VERCEL_URL}${data.redirectTo}`;
-                } else {
-                    newWindow.document.write(`<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2 style="color: #e53e3e;">❌ Admin Authentication Failed</h2><p>${data.error || 'Unknown error'}</p></body></html>`);
-                }
-            } catch (error) {
-                newWindow.document.write(`<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2 style="color: #e53e3e;">❌ Connection Error</h2><p>Failed to connect to the server. Please try again.</p></body></html>`);
-                console.error('Admin auth error:', error);
+                alert('Please allow popups for this site to access the admin panel');
             }
         });
 
