@@ -63,13 +63,13 @@ sync_env_file() {
             
             # Add to Vercel (suppress verbose output)
             # Use echo -n to prevent trailing newline
-            if echo -n "$value" | vercel env add "$key" "$vercel_env" > /dev/null 2>&1; then
+            if printf "%s" "$value" | vercel env add "$key" "$vercel_env" > /dev/null 2>&1; then
                 print_success "$key added successfully"
             else
                 # If it fails (likely because it already exists), try to remove and re-add
                 print_warning "$key already exists, updating..."
                 vercel env rm "$key" "$vercel_env" --yes > /dev/null 2>&1 || true
-                if echo -n "$value" | vercel env add "$key" "$vercel_env" > /dev/null 2>&1; then
+                if printf "%s" "$value" | vercel env add "$key" "$vercel_env" > /dev/null 2>&1; then
                     print_success "$key updated successfully"
                 else
                     print_error "Failed to set $key"
