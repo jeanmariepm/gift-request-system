@@ -543,8 +543,12 @@
             document.addEventListener(event, resetInactivityTimer, true);
         });
 
-        // Check if user is logged into portal
-        let isPortalLoggedIn = localStorage.getItem('portalLoggedIn') === 'true';
+        // Clear login state on page load - always start with login screen
+        localStorage.removeItem('portalLoggedIn');
+        localStorage.removeItem('portalUsername');
+        
+        // Check if user is logged into portal (will always be false now)
+        let isPortalLoggedIn = false;
         
         // Get selected environment (default to production) - declare early to avoid initialization errors
         let selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'production';
