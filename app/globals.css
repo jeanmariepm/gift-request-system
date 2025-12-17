@@ -386,3 +386,85 @@ h2 {
   background: rgba(231, 76, 60, 0.1);
 }
 
+/* Mobile Responsive Styles */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+  
+  /* Mobile Card Styles */
+  .mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .mobile-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+  }
+  
+  .mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #EBF5FA;
+  }
+  
+  .mobile-card-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .mobile-card-field:last-child {
+    border-bottom: none;
+  }
+  
+  .mobile-card-field label {
+    font-weight: 600;
+    color: #1B4F72;
+    flex-shrink: 0;
+    margin-right: 1rem;
+    min-width: 120px;
+  }
+  
+  .mobile-card-field span {
+    text-align: right;
+    color: #333;
+    word-break: break-word;
+  }
+  
+  /* Adjust container padding on mobile */
+  .container {
+    padding: 1rem;
+  }
+  
+  .page-title {
+    font-size: 1.75rem;
+  }
+  
+  .card {
+    padding: 1.5rem;
+  }
+}
+

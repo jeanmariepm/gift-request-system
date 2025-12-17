@@ -412,7 +412,8 @@ export default function FormPage() {
             </button>
           </div>
         ) : (
-          <div className="table-container">
+          {/* Desktop Table View */}
+          <div className="table-container desktop-only">
             <table className="table">
               <thead>
                 <tr>
@@ -470,6 +471,73 @@ export default function FormPage() {
                 })}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="mobile-cards mobile-only">
+            {submissions.map((submission) => {
+              const isPending = submission.status === 'Pending'
+              
+              return (
+                <div key={submission.id} className="mobile-card">
+                  <div className="mobile-card-header">
+                    <span className={`badge badge-${submission.status.toLowerCase()}`}>
+                      {submission.status}
+                    </span>
+                    {isPending && (
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button
+                          onClick={() => handleEditSubmission(submission)}
+                          className="icon-button edit-icon"
+                          title="Edit"
+                          aria-label="Edit submission"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSubmission(submission.id)}
+                          className="icon-button delete-icon"
+                          title="Delete"
+                          aria-label="Delete submission"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="mobile-card-field">
+                    <label>Date:</label>
+                    <span>{new Date(submission.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  
+                  <div className="mobile-card-field">
+                    <label>Duration:</label>
+                    <span>{submission.giftType}</span>
+                  </div>
+                  
+                  <div className="mobile-card-field">
+                    <label>Recipient Name:</label>
+                    <span>{submission.recipientName}</span>
+                  </div>
+                  
+                  <div className="mobile-card-field">
+                    <label>Recipient Email:</label>
+                    <span>{submission.recipientEmail || '-'}</span>
+                  </div>
+                  
+                  <div className="mobile-card-field">
+                    <label>Recipient Username:</label>
+                    <span>{submission.recipientUsername || '-'}</span>
+                  </div>
+                  
+                  <div className="mobile-card-field">
+                    <label>Message:</label>
+                    <span>{submission.message || '-'}</span>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
