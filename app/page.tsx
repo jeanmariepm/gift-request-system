@@ -184,6 +184,7 @@ export default function FormPage() {
   if (!accessToken || accessToken !== REQUIRED_ACCESS_TOKEN) {
     return (
       <div className="container">
+        <Logo />
         <div className="card" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
           <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</div>
           <h2 style={{ color: '#e53e3e' }}>Access Denied</h2>
@@ -206,6 +207,7 @@ export default function FormPage() {
   if (!userId || !userName) {
     return (
       <div className="container">
+        <Logo />
         <div className="card">
           <h2>Invalid Access</h2>
           <p>This page must be accessed from the main application with valid user credentials.</p>
@@ -412,6 +414,7 @@ export default function FormPage() {
             </button>
           </div>
         ) : (
+          <>
           {/* Desktop Table View */}
           <div className="table-container desktop-only">
             <table className="table">
@@ -539,6 +542,7 @@ export default function FormPage() {
               )
             })}
           </div>
+          </>
         )}
       </div>
     </div>
