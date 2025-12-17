@@ -1,11 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import Logo from './components/Logo'
-
-const REQUIRED_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2'
 
 interface Submission {
   id: string
@@ -20,15 +17,24 @@ interface Submission {
   readOnlyData: any
 }
 
+interface SessionData {
+  userId: string
+  userName: string
+  userEmail: string
+  env: string
+  authenticated: boolean
+}
+
 export default function FormPage() {
-  const searchParams = useSearchParams()
+  const router = useRouter()
   
-  // Get params from URL (passed from main app)
-  const [accessToken] = useState(searchParams.get('token') || '')
-  const [userId] = useState(searchParams.get('userId') || '')
-  const [userName] = useState(searchParams.get('userName') || '')
-  const [userEmail] = useState(searchParams.get('userEmail') || '')
-  const [env] = useState(searchParams.get('env') || 'production')
+  // Session data from secure cookie
+  const [session, setSession] = useState<SessionData | null>(null)
+  const [isLoadingSession, setIsLoadingSession] = useState(true)
+  const [userId, setUserId] = useState('')
+  const [userName, setUserName] = useState('')
+  const [userEmail, setUserEmail] = useState('')
+  const [env, setEnv] = useState('production')
   
   // Form inputs
   const [giftType, setGiftType] = useState('')
@@ -51,11 +57,37 @@ export default function FormPage() {
   // Editing state - to track which submission is being edited
   const [editingSubmissionId, setEditingSubmissionId] = useState<string | null>(null)
 
+  // Fetch session data on mount
   useEffect(() => {
-    if (userId) {
+    const fetchSession = async () => {
+      try {
+        const response = await fetch('/api/session')
+        if (!response.ok) {
+          router.push('/access-denied')
+          return
+        }
+        const sessionData = await response.json()
+        setSession(sessionData)
+        setUserId(sessionData.userId)
+        setUserName(sessionData.userName)
+        setUserEmail(sessionData.userEmail)
+        setEnv(sessionData.env)
+      } catch (error) {
+        console.error('Failed to fetch session:', error)
+        router.push('/access-denied')
+      } finally {
+        setIsLoadingSession(false)
+      }
+    }
+
+    fetchSession()
+  }, [router])
+
+  useEffect(() => {
+    if (userId && !isLoadingSession) {
       fetchSubmissions()
     }
-  }, [userId])
+  }, [userId, isLoadingSession])
 
   const fetchSubmissions = async () => {
     try {
@@ -180,40 +212,26 @@ export default function FormPage() {
   }
 
 
-  // Validate access token first
-  if (!accessToken || accessToken !== REQUIRED_ACCESS_TOKEN) {
+  // Show loading while fetching session
+  if (isLoadingSession) {
     return (
       <div className="container">
         <Logo />
         <div className="card" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</div>
-          <h2 style={{ color: '#e53e3e' }}>Access Denied</h2>
-          <p style={{ marginTop: '1rem', marginBottom: '2rem' }}>
-            This application can only be accessed through the authorized company portal.
-          </p>
-          <div style={{ background: '#fff5f5', padding: '1rem', borderRadius: '8px', border: '1px solid #feb2b2' }}>
-            <p style={{ color: '#742a2a', fontSize: '0.875rem' }}>
-              <strong>Error:</strong> Invalid or missing access token
-            </p>
-            <p style={{ color: '#742a2a', fontSize: '0.875rem', marginTop: '0.5rem' }}>
-              Please contact your system administrator if you believe this is an error.
-            </p>
-          </div>
+          <h2>Loading...</h2>
+          <p style={{ color: '#666' }}>Please wait while we verify your session.</p>
         </div>
       </div>
     )
   }
 
+  // Session validation is handled by middleware - if we get here, session is valid
   if (!userId || !userName) {
     return (
       <div className="container">
         <Logo />
-        <div className="card">
-          <h2>Invalid Access</h2>
-          <p>This page must be accessed from the main application with valid user credentials.</p>
-          <p style={{ marginTop: '1rem', color: '#666' }}>
-            Missing parameters: userId or userName
-          </p>
+        <div className="card" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
+          <h2>Loading your information...</h2>
         </div>
       </div>
     )
