@@ -242,18 +242,18 @@ a {
 }
 
 .badge-pending {
-  background: #F4D03F;
-  color: #1B4F72;
+  background: #F4D03F; /* Gold/yellow */
+  color: #8D6E00; /* Darker gold text */
 }
 
 .badge-processed {
-  background: #d1fae5;
-  color: #065f46;
+  background: #D1FAE5; /* Light green */
+  color: #065F46; /* Dark green text */
 }
 
 .badge-cancelled {
-  background: #fed7d7;
-  color: #742a2a;
+  background: #FED7D7; /* Light red */
+  color: #C53030; /* Dark red text */
 }
 
 h1 {
