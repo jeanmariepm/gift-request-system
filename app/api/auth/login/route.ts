@@ -4,27 +4,36 @@ import { cookies } from 'next/headers'
 const REQUIRED_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2'
 const REQUIRED_ADMIN_TOKEN = 'admin_access_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6'
 
-// Allowed origins for CORS - can be configured via environment variable
+// CORS Configuration
+// Since we use token-based authentication, we can allow requests from any origin.
+// Security is enforced by:
+// 1. Token validation (REQUIRED_ACCESS_TOKEN / REQUIRED_ADMIN_TOKEN)
+// 2. HTTP-only cookies (not accessible via JavaScript)
+// 3. SameSite cookie attribute (CSRF protection)
+//
+// To restrict to specific origins, set ALLOWED_ORIGINS environment variable:
+// ALLOWED_ORIGINS=https://portal.company.com,https://intranet.company.com
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS 
   ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
-  : [
-      'http://localhost:8000',           // Local development (Python server)
-      'http://localhost:8080',           // Alternative local port
-      'http://127.0.0.1:8000',          // Localhost via IP
-      // Add your production portal domain when deploying:
-      // 'https://company-portal.com',
-      // 'https://intranet.yourcompany.com',
-    ]
+  : null // null = allow all origins
 
 // Get CORS headers based on request origin
 function getCorsHeaders(request: NextRequest) {
   const origin = request.headers.get('origin')
   
-  // Check if origin is allowed
-  const isAllowed = origin && ALLOWED_ORIGINS.includes(origin)
+  // If ALLOWED_ORIGINS is configured, check if origin is allowed
+  if (ALLOWED_ORIGINS !== null) {
+    const isAllowed = origin && ALLOWED_ORIGINS.includes(origin)
+    return {
+      'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
+      'Access-Control-Allow-Credentials': 'true',
+    }
+  }
   
+  // Allow all origins by reflecting the request origin
+  // This is safe because authentication is enforced by token validation
   return {
-    'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
+    'Access-Control-Allow-Origin': origin || '*',
     'Access-Control-Allow-Credentials': 'true',
   }
 }

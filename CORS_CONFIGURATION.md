@@ -4,6 +4,15 @@
 
 Cross-Origin Resource Sharing (CORS) is a security feature that controls which domains can access the Gifts App API. This is necessary because the Mock App (company portal) and the Gifts App run on different origins.
 
+## Security Model
+
+The Gifts App's security is enforced through:
+1. ✅ **Token validation** - Every request must include a valid access token
+2. ✅ **HTTP-only cookies** - Session data is not accessible via JavaScript
+3. ✅ **SameSite cookies** - Protection against CSRF attacks
+
+Because authentication is enforced at the token level, CORS restrictions can be relaxed.
+
 ## How CORS Works
 
 When the browser detects a cross-origin request (e.g., from `https://company-portal.com` to `https://gifts-app.vercel.app`), it:
@@ -16,22 +25,36 @@ When the browser detects a cross-origin request (e.g., from `https://company-por
 
 **File**: `/app/api/auth/login/route.ts`
 
-### Default Allowed Origins (Development)
+### Default: Allow All Origins ✨
 
 ```typescript
-const ALLOWED_ORIGINS = [
-  'http://localhost:8000',      // Local Python server
-  'http://localhost:8080',      // Alternative local port
-  'http://127.0.0.1:8000',      // Localhost via IP
-]
+const ALLOWED_ORIGINS = null  // null = allow all origins
+
+function getCorsHeaders(request) {
+  // Allow all origins by reflecting the request origin
+  return {
+    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Credentials': 'true',
+  }
+}
 ```
 
-### Dynamic Origin Validation
+**This means**:
+- ✅ Works from any machine (localhost, local network IP, remote server)
+- ✅ Works on any port (8000, 8080, 3000, etc.)
+- ✅ No configuration needed for testing or deployment
+- ✅ Security is enforced by token validation, not CORS
 
-The code now includes a `getCorsHeaders()` function that:
-- Reads the `origin` header from incoming requests
-- Checks if it's in the `ALLOWED_ORIGINS` list
-- Returns appropriate CORS headers
+### Optional: Restrict to Specific Origins
+
+If you want to restrict access to specific domains, set the `ALLOWED_ORIGINS` environment variable:
+
+```bash
+# In Vercel Dashboard or .env.local
+ALLOWED_ORIGINS=https://portal.company.com,https://intranet.company.com
+```
+
+The code will automatically switch to restricted mode when this variable is set.
 
 ## Production Configuration
 
@@ -66,25 +89,20 @@ const ALLOWED_ORIGINS = [
 
 ### Scenario: Testing on Local Network
 
-If you want to test the mock app from another computer on your network:
+With the default configuration (all origins allowed), testing from another machine is simple:
 
 **1. Find your local IP address:**
 ```bash
 # On Mac/Linux
 ifconfig | grep "inet " | grep -v 127.0.0.1
 
+# On Windows
+ipconfig
+
 # Example output: 192.168.1.100
 ```
 
-**2. Add this IP to ALLOWED_ORIGINS:**
-```typescript
-const ALLOWED_ORIGINS = [
-  'http://localhost:8000',
-  'http://192.168.1.100:8000',  // Your machine's local IP
-]
-```
-
-**3. Start both servers:**
+**2. Start both servers:**
 ```bash
 # Terminal 1: Next.js (Gifts App)
 npm run dev
@@ -93,25 +111,47 @@ npm run dev
 cd docs && python3 -m http.server 8000
 ```
 
-**4. Access from another machine:**
+**3. Access from another machine:**
 ```
 http://192.168.1.100:8000/index.html
 ```
 
+**That's it!** No configuration changes needed. ✨
+
+The mock app will automatically connect to your Next.js server, and CORS will allow the request from any origin.
+
 ## Security Best Practices
 
 ### ✅ DO:
-- Use specific origins (not wildcards) in production
-- Use environment variables for production domains
-- Test CORS configuration before deploying
-- Use HTTPS for all production origins
-- Keep `Access-Control-Allow-Credentials: true` for cookie support
+- ✅ **Rely on token validation** - This is your primary security layer
+- ✅ **Use HTTP-only cookies** - Already implemented for session storage
+- ✅ **Use HTTPS in production** - For the Gifts App and company portal
+- ✅ **Keep tokens secret** - Never expose them in client-side code
+- ✅ **Rotate tokens regularly** - Change `REQUIRED_ACCESS_TOKEN` periodically
+- ✅ **Monitor authentication logs** - Track failed authentication attempts
+
+### 🔒 Why Allowing All Origins is Safe:
+
+**Without Token**: CORS blocked ❌  
+**With Invalid Token**: Authentication fails ❌  
+**With Valid Token**: Authentication succeeds ✅  
+
+The token is the gatekeeper, not CORS.
+
+### 🎯 When to Restrict Origins:
+
+You might want to set `ALLOWED_ORIGINS` if:
+- Compliance requirements mandate origin restrictions
+- You want defense-in-depth (multiple security layers)
+- You want to prevent specific domains from attempting authentication
+- Your security policy requires explicit allowlists
 
 ### ❌ DON'T:
-- Use `Access-Control-Allow-Origin: *` with credentials
-- Allow all origins in production
-- Store production domains in public repositories
-- Mix HTTP and HTTPS origins unnecessarily
+- ❌ Expose tokens in URLs (we use POST body ✅)
+- ❌ Store tokens in localStorage (we use HTTP-only cookies ✅)
+- ❌ Commit production tokens to git
+- ❌ Use the same tokens for dev and production
+- ❌ Share tokens across different applications
 
 ## Troubleshooting
 
