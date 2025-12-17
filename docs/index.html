@@ -817,7 +817,7 @@ Security: Token sent in request body (not URL!)`;
             });
         }
 
-        // Handle form submission - use secure POST method
+        // Handle form submission - use different methods for local vs remote
         document.getElementById('userForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -831,6 +831,32 @@ Security: Token sent in request body (not URL!)`;
             // Store in localStorage
             localStorage.setItem('mockAppUser', JSON.stringify(userData));
 
+            const currentEnv = getCurrentEnvironment();
+            
+            // For remote environments (Development/Production), use direct URL navigation
+            // This ensures the cookie is set in the correct domain
+            if (currentEnv === 'development' || currentEnv === 'production') {
+                // Build URL with token parameters (middleware will handle cookie setting)
+                const params = new URLSearchParams({
+                    token: USER_ACCESS_TOKEN,
+                    env: currentEnv,
+                    userId: userData.userId,
+                    userName: userData.userName,
+                    userEmail: userData.userEmail
+                });
+                
+                const userUrl = `${getGiftsAppUrl()}/?${params.toString()}`;
+                
+                // Open in new window/tab - middleware will validate token and set cookie
+                const newWindow = window.open(userUrl, '_blank');
+                
+                if (!newWindow) {
+                    alert('Please allow popups for this site to access the Gifts App');
+                }
+                return;
+            }
+
+            // For local environment, use POST method (same-origin, more secure)
             // Open new window FIRST (to avoid popup blockers)
             const newWindow = window.open('about:blank', '_blank');
             
@@ -849,10 +875,10 @@ Security: Token sent in request body (not URL!)`;
                     userId: userData.userId,
                     userName: userData.userName,
                     userEmail: userData.userEmail,
-                    env: getCurrentEnvironment()
+                    env: currentEnv
                 });
 
-                // Send POST request with token in body (never in URL!)
+                // Send POST request with token in body
                 const response = await fetch(`${getGiftsAppUrl()}/api/auth/login`, {
                     method: 'POST',
                     headers: {
@@ -863,9 +889,9 @@ Security: Token sent in request body (not URL!)`;
                         userId: userData.userId,
                         userName: userData.userName,
                         userEmail: userData.userEmail,
-                        env: getCurrentEnvironment()
+                        env: currentEnv
                     }),
-                    credentials: 'include' // Important: include cookies in request
+                    credentials: 'include'
                 });
 
                 console.log('Response status:', response.status);
