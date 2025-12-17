@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
 // Load access tokens from environment variables
-const REQUIRED_ACCESS_TOKEN = process.env.USER_ACCESS_TOKEN || ''
-const REQUIRED_ADMIN_TOKEN = process.env.ADMIN_ACCESS_TOKEN || ''
+// IMPORTANT: Trim to remove trailing newlines that Vercel CLI adds
+const REQUIRED_ACCESS_TOKEN = (process.env.USER_ACCESS_TOKEN || '').trim()
+const REQUIRED_ADMIN_TOKEN = (process.env.ADMIN_ACCESS_TOKEN || '').trim()
 
 if (!REQUIRED_ACCESS_TOKEN || !REQUIRED_ADMIN_TOKEN) {
   console.error('WARNING: Access tokens not configured. Set USER_ACCESS_TOKEN and ADMIN_ACCESS_TOKEN environment variables.')

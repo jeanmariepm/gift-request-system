@@ -3,19 +3,12 @@ import type { NextRequest } from 'next/server'
 
 // Load access tokens from environment variables
 // Separate tokens for dev and production environments
-console.log('[Middleware Init] Loading environment variables...')
-console.log('[Middleware Init] USER_ACCESS_TOKEN length:', process.env.USER_ACCESS_TOKEN?.length)
-console.log('[Middleware Init] ADMIN_ACCESS_TOKEN length:', process.env.ADMIN_ACCESS_TOKEN?.length)
-
-const REQUIRED_ACCESS_TOKEN = process.env.USER_ACCESS_TOKEN || ''
-const REQUIRED_ADMIN_TOKEN = process.env.ADMIN_ACCESS_TOKEN || ''
-
-console.log('[Middleware Init] REQUIRED_ACCESS_TOKEN:', REQUIRED_ACCESS_TOKEN?.substring(0, 30) + '...')
-console.log('[Middleware Init] REQUIRED_ADMIN_TOKEN:', REQUIRED_ADMIN_TOKEN?.substring(0, 30) + '...')
+// IMPORTANT: Trim to remove trailing newlines that Vercel CLI adds
+const REQUIRED_ACCESS_TOKEN = (process.env.USER_ACCESS_TOKEN || '').trim()
+const REQUIRED_ADMIN_TOKEN = (process.env.ADMIN_ACCESS_TOKEN || '').trim()
 
 if (!REQUIRED_ACCESS_TOKEN || !REQUIRED_ADMIN_TOKEN) {
   console.error('WARNING: Access tokens not configured. Set USER_ACCESS_TOKEN and ADMIN_ACCESS_TOKEN environment variables.')
-  console.error('Available env keys:', Object.keys(process.env).filter(k => k.includes('TOKEN')))
 }
 
 export function middleware(request: NextRequest) {
