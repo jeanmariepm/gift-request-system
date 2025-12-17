@@ -48,9 +48,8 @@ export default function FormPage() {
   const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(true)
   const [submissionsError, setSubmissionsError] = useState('')
   
-  // Inline editing state
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editedValues, setEditedValues] = useState<Partial<Submission>>({})
+  // Editing state - to track which submission is being edited
+  const [editingSubmissionId, setEditingSubmissionId] = useState<string | null>(null)
 
   useEffect(() => {
     if (userId) {
@@ -75,45 +74,37 @@ export default function FormPage() {
     }
   }
 
-  const handleEdit = (submission: Submission) => {
-    setEditingId(submission.id)
-    setEditedValues({
-      giftType: submission.giftType,
-      recipientUsername: submission.recipientUsername,
-      recipientName: submission.recipientName,
-      recipientEmail: submission.recipientEmail,
-      message: submission.message
-    })
+  const handleEditSubmission = (submission: Submission) => {
+    // Populate form with submission data
+    setEditingSubmissionId(submission.id)
+    setGiftType(submission.giftType)
+    setRecipientUsername(submission.recipientUsername || '')
+    setRecipientName(submission.recipientName)
+    setRecipientEmail(submission.recipientEmail || '')
+    setMessage(submission.message || '')
+    setShowForm(true)
   }
 
-  const handleCancelEdit = () => {
-    setEditingId(null)
-    setEditedValues({})
-  }
+  const handleDeleteSubmission = async (submissionId: string) => {
+    if (!confirm('Are you sure you want to delete this gift request? This action cannot be undone.')) {
+      return
+    }
 
-  const handleSave = async (submissionId: string) => {
     try {
-      const response = await fetch(`/api/submissions/${submissionId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...editedValues,
-          env
-        })
+      const response = await fetch(`/api/submissions/${submissionId}?env=${env}`, {
+        method: 'DELETE'
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to update submission')
+        throw new Error(data.error || 'Failed to delete submission')
       }
 
       // Refresh the submissions list
       await fetchSubmissions()
-      setEditingId(null)
-      setEditedValues({})
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'An error occurred while saving')
+      alert(err instanceof Error ? err.message : 'An error occurred while deleting')
     }
   }
 
@@ -129,20 +120,40 @@ export default function FormPage() {
     setIsSubmitting(true)
     
     try {
-      const response = await fetch('/api/submissions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId,
-          userName,
-          userEmail,
-          giftType,
-          recipientUsername,
-          recipientName,
-          recipientEmail,
-          message
+      let response
+      
+      if (editingSubmissionId) {
+        // Update existing submission
+        response = await fetch(`/api/submissions/${editingSubmissionId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            giftType,
+            recipientUsername,
+            recipientName,
+            recipientEmail,
+            message,
+            env
+          })
         })
-      })
+      } else {
+        // Create new submission
+        response = await fetch('/api/submissions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            userName,
+            userEmail,
+            giftType,
+            recipientUsername,
+            recipientName,
+            recipientEmail,
+            message,
+            env
+          })
+        })
+      }
       
       const data = await response.json()
       
@@ -158,6 +169,7 @@ export default function FormPage() {
       setRecipientName('')
       setRecipientEmail('')
       setMessage('')
+      setEditingSubmissionId(null)
       // Refresh submissions list
       fetchSubmissions()
     } catch (err) {
@@ -211,7 +223,7 @@ export default function FormPage() {
       <div className="container">
         <Logo />
         
-        <h1 className="page-title">Gift Request Form</h1>
+        <h1 className="page-title">{editingSubmissionId ? 'Edit Gift Request' : 'Gift Request Form'}</h1>
         
         <div className="card">
           {error && (
@@ -292,7 +304,15 @@ export default function FormPage() {
               </button>
               <button 
                 type="button"
-                onClick={() => setShowForm(false)}
+                onClick={() => {
+                  setShowForm(false)
+                  setEditingSubmissionId(null)
+                  setGiftType('')
+                  setRecipientUsername('')
+                  setRecipientName('')
+                  setRecipientEmail('')
+                  setMessage('')
+                }}
                 className="btn btn-secondary"
               >
                 Cancel
@@ -402,110 +422,41 @@ export default function FormPage() {
               </thead>
               <tbody>
                 {submissions.map((submission) => {
-                  const isEditing = editingId === submission.id
                   const isPending = submission.status === 'Pending'
-                  const rowClass = isPending ? 'editable-row' : 'non-editable-row'
                   
                   return (
-                    <tr key={submission.id} className={rowClass}>
-                      <td className="non-editable-cell">{new Date(submission.createdAt).toLocaleDateString()}</td>
-                      <td className={isPending ? 'editable-cell' : ''}>
-                        {isEditing ? (
-                          <select
-                            value={editedValues.giftType || submission.giftType}
-                            onChange={(e) => setEditedValues({ ...editedValues, giftType: e.target.value })}
-                            className="inline-edit-input"
-                          >
-                            <option value="One Month">One Month</option>
-                            <option value="Two Months">Two Months</option>
-                            <option value="Three Months">Three Months</option>
-                          </select>
-                        ) : (
-                          submission.giftType
-                        )}
-                      </td>
-                      <td className={isPending ? 'editable-cell' : ''}>
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={editedValues.recipientUsername ?? submission.recipientUsername ?? ''}
-                            onChange={(e) => setEditedValues({ ...editedValues, recipientUsername: e.target.value })}
-                            className="inline-edit-input"
-                            placeholder="Username (optional)"
-                          />
-                        ) : (
-                          submission.recipientUsername || '-'
-                        )}
-                      </td>
-                      <td className={isPending ? 'editable-cell' : ''}>
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={editedValues.recipientName ?? submission.recipientName}
-                            onChange={(e) => setEditedValues({ ...editedValues, recipientName: e.target.value })}
-                            className="inline-edit-input"
-                            required
-                          />
-                        ) : (
-                          submission.recipientName
-                        )}
-                      </td>
-                      <td className={isPending ? 'editable-cell' : ''}>
-                        {isEditing ? (
-                          <input
-                            type="email"
-                            value={editedValues.recipientEmail ?? submission.recipientEmail ?? ''}
-                            onChange={(e) => setEditedValues({ ...editedValues, recipientEmail: e.target.value })}
-                            className="inline-edit-input"
-                            required
-                          />
-                        ) : (
-                          submission.recipientEmail || '-'
-                        )}
-                      </td>
+                    <tr key={submission.id}>
+                      <td>{new Date(submission.createdAt).toLocaleDateString()}</td>
+                      <td>{submission.giftType}</td>
+                      <td>{submission.recipientUsername || '-'}</td>
+                      <td>{submission.recipientName}</td>
+                      <td>{submission.recipientEmail || '-'}</td>
                       <td>
                         <span className={`badge badge-${submission.status.toLowerCase()}`}>
                           {submission.status}
                         </span>
                       </td>
-                      <td className={isPending ? 'editable-cell' : ''}>
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={editedValues.message ?? submission.message ?? ''}
-                            onChange={(e) => setEditedValues({ ...editedValues, message: e.target.value })}
-                            className="inline-edit-input"
-                            placeholder="Message (optional)"
-                          />
-                        ) : (
-                          submission.message || '-'
-                        )}
-                      </td>
+                      <td>{submission.message || '-'}</td>
                       <td>
                         {isPending && (
-                          isEditing ? (
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                              <button
-                                onClick={() => handleSave(submission.id)}
-                                className="btn btn-small btn-success"
-                              >
-                                Save
-                              </button>
-                              <button
-                                onClick={handleCancelEdit}
-                                className="btn btn-small btn-secondary"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          ) : (
+                          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                             <button
-                              onClick={() => handleEdit(submission)}
-                              className="btn btn-small btn-primary"
+                              onClick={() => handleEditSubmission(submission)}
+                              className="icon-button edit-icon"
+                              title="Edit"
+                              aria-label="Edit submission"
                             >
-                              Edit
+                              ✏️
                             </button>
-                          )
+                            <button
+                              onClick={() => handleDeleteSubmission(submission.id)}
+                              className="icon-button delete-icon"
+                              title="Delete"
+                              aria-label="Delete submission"
+                            >
+                              🗑️
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>

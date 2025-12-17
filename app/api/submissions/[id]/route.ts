@@ -54,3 +54,42 @@ export async function PUT(
   }
 }
 
+// DELETE - Delete a submission (only pending items can be deleted)
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const env = searchParams.get('env') || 'production'
+    const { id } = params
+    
+    // Get appropriate database based on environment
+    const dbUrl = getDatabaseUrl(env)
+    const prisma = getPrismaClient(dbUrl)
+    
+    // First, check if the submission exists and is pending
+    const existingSubmission = await prisma.submission.findUnique({
+      where: { id }
+    })
+    
+    if (!existingSubmission) {
+      return NextResponse.json({ error: 'Submission not found' }, { status: 404 })
+    }
+    
+    if (existingSubmission.status !== 'Pending') {
+      return NextResponse.json({ error: 'Only pending submissions can be deleted' }, { status: 400 })
+    }
+    
+    // Delete the submission
+    await prisma.submission.delete({
+      where: { id }
+    })
+    
+    return NextResponse.json({ success: true, message: 'Submission deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting submission:', error)
+    return NextResponse.json({ error: 'Failed to delete submission' }, { status: 500 })
+  }
+}
+
