@@ -28,6 +28,7 @@ export default function FormPage() {
   const [userId] = useState(searchParams.get('userId') || '')
   const [userName] = useState(searchParams.get('userName') || '')
   const [userEmail] = useState(searchParams.get('userEmail') || '')
+  const [env] = useState(searchParams.get('env') || 'production')
   
   // Form inputs
   const [giftType, setGiftType] = useState('')
