@@ -299,6 +299,7 @@ export default function AdminDashboardPage() {
             
             <div style={{ marginBottom: '1.5rem' }}>
               <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>User Information</h3>
+              <div className="read-only-item"><strong>User ID:</strong> {selectedSubmission.userId}</div>
               <div className="read-only-item"><strong>Name:</strong> {selectedSubmission.userName}</div>
               <div className="read-only-item"><strong>Email:</strong> {selectedSubmission.userEmail}</div>
               {selectedSubmission.readOnlyData?.companyName && (
