@@ -179,15 +179,15 @@ export default function AdminDashboardPage() {
               flex: 1, 
               minWidth: '180px', 
               background: filterStatus === 'all' ? '#667eea' : '#f7fafc', 
-              padding: '1.5rem', 
+              padding: '0.75rem 1rem', 
               borderRadius: '8px',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               border: filterStatus === 'all' ? '3px solid #667eea' : '3px solid transparent'
             }}
           >
-            <h3 style={{ fontSize: '2rem', margin: 0, color: filterStatus === 'all' ? 'white' : '#667eea' }}>{stats.total}</h3>
-            <p style={{ margin: '0.5rem 0 0 0', color: filterStatus === 'all' ? 'white' : '#666' }}>Total</p>
+            <h3 style={{ fontSize: '1.75rem', margin: 0, color: filterStatus === 'all' ? 'white' : '#667eea' }}>{stats.total}</h3>
+            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: filterStatus === 'all' ? 'white' : '#666' }}>Total</p>
           </div>
           <div 
             onClick={() => handleFilterClick('Pending')}
@@ -195,15 +195,15 @@ export default function AdminDashboardPage() {
               flex: 1, 
               minWidth: '180px', 
               background: filterStatus === 'Pending' ? '#f59e0b' : '#fef3c7', 
-              padding: '1.5rem', 
+              padding: '0.75rem 1rem', 
               borderRadius: '8px',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               border: filterStatus === 'Pending' ? '3px solid #f59e0b' : '3px solid transparent'
             }}
           >
-            <h3 style={{ fontSize: '2rem', margin: 0, color: filterStatus === 'Pending' ? 'white' : '#92400e' }}>{stats.pending}</h3>
-            <p style={{ margin: '0.5rem 0 0 0', color: filterStatus === 'Pending' ? 'white' : '#666' }}>Pending</p>
+            <h3 style={{ fontSize: '1.75rem', margin: 0, color: filterStatus === 'Pending' ? 'white' : '#92400e' }}>{stats.pending}</h3>
+            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: filterStatus === 'Pending' ? 'white' : '#666' }}>Pending</p>
           </div>
           <div 
             onClick={() => handleFilterClick('Processed')}
@@ -211,15 +211,15 @@ export default function AdminDashboardPage() {
               flex: 1, 
               minWidth: '180px', 
               background: filterStatus === 'Processed' ? '#10b981' : '#d1fae5', 
-              padding: '1.5rem', 
+              padding: '0.75rem 1rem', 
               borderRadius: '8px',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               border: filterStatus === 'Processed' ? '3px solid #10b981' : '3px solid transparent'
             }}
           >
-            <h3 style={{ fontSize: '2rem', margin: 0, color: filterStatus === 'Processed' ? 'white' : '#065f46' }}>{stats.processed}</h3>
-            <p style={{ margin: '0.5rem 0 0 0', color: filterStatus === 'Processed' ? 'white' : '#666' }}>Processed</p>
+            <h3 style={{ fontSize: '1.75rem', margin: 0, color: filterStatus === 'Processed' ? 'white' : '#065f46' }}>{stats.processed}</h3>
+            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: filterStatus === 'Processed' ? 'white' : '#666' }}>Processed</p>
           </div>
           <div 
             onClick={() => handleFilterClick('Cancelled')}
@@ -227,45 +227,18 @@ export default function AdminDashboardPage() {
               flex: 1, 
               minWidth: '180px', 
               background: filterStatus === 'Cancelled' ? '#ef4444' : '#fed7d7', 
-              padding: '1.5rem', 
+              padding: '0.75rem 1rem', 
               borderRadius: '8px',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               border: filterStatus === 'Cancelled' ? '3px solid #ef4444' : '3px solid transparent'
             }}
           >
-            <h3 style={{ fontSize: '2rem', margin: 0, color: filterStatus === 'Cancelled' ? 'white' : '#c53030' }}>{stats.cancelled}</h3>
-            <p style={{ margin: '0.5rem 0 0 0', color: filterStatus === 'Cancelled' ? 'white' : '#666' }}>Cancelled</p>
+            <h3 style={{ fontSize: '1.75rem', margin: 0, color: filterStatus === 'Cancelled' ? 'white' : '#c53030' }}>{stats.cancelled}</h3>
+            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: filterStatus === 'Cancelled' ? 'white' : '#666' }}>Cancelled</p>
           </div>
         </div>
 
-        {/* Sort Options */}
-        <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <label style={{ fontWeight: 600 }}>Sort by:</label>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button
-              onClick={() => setSortBy('date')}
-              className={`btn btn-small ${sortBy === 'date' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
-            >
-              Date
-            </button>
-            <button
-              onClick={() => setSortBy('user')}
-              className={`btn btn-small ${sortBy === 'user' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
-            >
-              User
-            </button>
-            <button
-              onClick={() => setSortBy('recipientEmail')}
-              className={`btn btn-small ${sortBy === 'recipientEmail' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
-            >
-              Recipient Email
-            </button>
-          </div>
-        </div>
 
         {error && (
           <div className="alert alert-error">
@@ -284,12 +257,30 @@ export default function AdminDashboardPage() {
             <table className="table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>User</th>
+                  <th 
+                    onClick={() => setSortBy('date')}
+                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                    title="Click to sort by date"
+                  >
+                    Date {sortBy === 'date' && '↓'}
+                  </th>
+                  <th 
+                    onClick={() => setSortBy('user')}
+                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                    title="Click to sort by user"
+                  >
+                    User {sortBy === 'user' && '↓'}
+                  </th>
                   <th>Duration</th>
                   <th>Recipient Username</th>
                   <th>Recipient Name</th>
-                  <th>Recipient Email</th>
+                  <th 
+                    onClick={() => setSortBy('recipientEmail')}
+                    style={{ cursor: 'pointer', userSelect: 'none' }}
+                    title="Click to sort by recipient email"
+                  >
+                    Recipient Email {sortBy === 'recipientEmail' && '↓'}
+                  </th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
