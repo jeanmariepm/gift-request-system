@@ -349,11 +349,12 @@
                 <div class="form-group">
                     <label for="environmentSelect">🌍 Environment</label>
                     <select id="environmentSelect" style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
-                        <option value="production">🚀 Production</option>
-                        <option value="development">🔧 Development</option>
+                        <option value="local">💻 Local (localhost:3000)</option>
+                        <option value="development">🔧 Development (Vercel Preview)</option>
+                        <option value="production">🚀 Production (Vercel)</option>
                     </select>
                     <small style="color: #718096; display: block; margin-top: 0.5rem;">
-                        Select which environment to connect to
+                        Select which Gifts App environment to connect to
                     </small>
                 </div>
 
@@ -509,10 +510,18 @@
 
     <script>
         // ====== CONSTANTS - DEFINE FIRST TO AVOID INITIALIZATION ERRORS ======
-        // Vercel deployment URL (switches database at runtime)
-        // For local testing, use: http://localhost:3000
-        // For production, use: https://instant-jeanmarie-mariadassous-projects.vercel.app
-        const VERCEL_URL = 'http://localhost:3000';
+        // Environment URLs for Gifts App
+        const ENVIRONMENT_URLS = {
+            local: 'http://localhost:3000',
+            development: 'https://gift-request-system-git-dev-jeanmariepm.vercel.app', // Update with your actual dev URL
+            production: 'https://instant-jeanmarie-mariadassous-projects.vercel.app'
+        };
+
+        // Function to get the current Gifts App URL based on selected environment
+        function getGiftsAppUrl() {
+            const env = localStorage.getItem('selectedEnvironment') || 'local';
+            return ENVIRONMENT_URLS[env] || ENVIRONMENT_URLS.local;
+        }
 
         // Access tokens for secure access to gift system
         const USER_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2';
@@ -554,8 +563,8 @@
         // Check if user is logged into portal (will always be false now)
         let isPortalLoggedIn = false;
         
-        // Get selected environment (default to production) - declare early to avoid initialization errors
-        let selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'production';
+        // Get selected environment (default to local for testing) - declare early to avoid initialization errors
+        let selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'local';
         
         // Get environment selector element
         const envSelect = document.getElementById('environmentSelect');
@@ -567,15 +576,30 @@
 
         // Get current environment identifier
         function getCurrentEnvironment() {
-            selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'production';
+            selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'local';
             return selectedEnvironment;
         }
 
         // Update environment badges on both tabs
         function updateEnvironmentBadges() {
             const env = getCurrentEnvironment();
-            const envName = env === 'production' ? '🚀 Production' : '🔧 Development';
-            const envClass = env === 'production' ? 'production' : 'development';
+            let envName, envClass;
+            
+            switch(env) {
+                case 'production':
+                    envName = '🚀 Production';
+                    envClass = 'production';
+                    break;
+                case 'development':
+                    envName = '🔧 Development';
+                    envClass = 'development';
+                    break;
+                case 'local':
+                default:
+                    envName = '💻 Local';
+                    envClass = 'development'; // Use development styling for local
+                    break;
+            }
             
             const simulatorBadge = document.getElementById('simulator-env-badge');
             const adminBadge = document.getElementById('admin-env-badge');
@@ -609,9 +633,23 @@
                 updateEnvironmentBadges();
                 
                 // Show notification
-                const envName = selectedEnvironment === 'production' ? 'Production' : 'Development';
-                const icon = selectedEnvironment === 'production' ? '🚀' : '🔧';
-                alert(`${icon} Environment switched to ${envName}`);
+                let envName, icon;
+                switch(selectedEnvironment) {
+                    case 'production':
+                        envName = 'Production';
+                        icon = '🚀';
+                        break;
+                    case 'development':
+                        envName = 'Development (Vercel Preview)';
+                        icon = '🔧';
+                        break;
+                    case 'local':
+                    default:
+                        envName = 'Local (localhost:3000)';
+                        icon = '💻';
+                        break;
+                }
+                alert(`${icon} Environment switched to ${envName}\n\nGifts App URL: ${getGiftsAppUrl()}`);
             });
         }
         
@@ -719,7 +757,7 @@
                         
                         const tooltipText = `🔐 ADMIN AUTHENTICATION (Developer Info)
                         
-URL: ${VERCEL_URL}/admin?${params.toString()}
+URL: ${getGiftsAppUrl()}/admin?${params.toString()}
 
 Flow:
 1. Browser navigates to /admin with token parameter
@@ -741,7 +779,7 @@ Security: Cookie is HTTP-only, not accessible via JavaScript`;
                 env: getCurrentEnvironment()
             });
             
-            const adminUrl = `${VERCEL_URL}/admin?${params.toString()}`;
+            const adminUrl = `${getGiftsAppUrl()}/admin?${params.toString()}`;
             
             // Open in new window/tab
             const newWindow = window.open(adminUrl, '_blank');
@@ -766,7 +804,7 @@ Security: Cookie is HTTP-only, not accessible via JavaScript`;
                 
                 const tooltipText = `🔐 SECURE POST AUTHENTICATION (Developer Info)
                 
-URL: ${VERCEL_URL}/api/auth/login
+URL: ${getGiftsAppUrl()}/api/auth/login
 Method: POST
 Content-Type: application/json
 
@@ -805,7 +843,7 @@ Security: Token sent in request body (not URL!)`;
             newWindow.document.write('<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2>🔐 Authenticating securely...</h2><p>Please wait while we verify your credentials.</p></body></html>');
 
             try {
-                console.log('Attempting authentication to:', `${VERCEL_URL}/api/auth/login`);
+                console.log('Attempting authentication to:', `${getGiftsAppUrl()}/api/auth/login`);
                 console.log('Payload:', {
                     token: USER_ACCESS_TOKEN,
                     userId: userData.userId,
@@ -815,7 +853,7 @@ Security: Token sent in request body (not URL!)`;
                 });
 
                 // Send POST request with token in body (never in URL!)
-                const response = await fetch(`${VERCEL_URL}/api/auth/login`, {
+                const response = await fetch(`${getGiftsAppUrl()}/api/auth/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -836,7 +874,7 @@ Security: Token sent in request body (not URL!)`;
 
                 if (response.ok && data.success) {
                     // Redirect the new window to the app
-                    newWindow.location.href = `${VERCEL_URL}${data.redirectTo}`;
+                    newWindow.location.href = `${getGiftsAppUrl()}${data.redirectTo}`;
                 } else {
                     newWindow.document.write(`<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2 style="color: #e53e3e;">❌ Authentication Failed</h2><p>${data.error || 'Unknown error'}</p><p style="color: #666; font-size: 0.9rem;">Check browser console (F12) for details</p></body></html>`);
                 }
@@ -856,7 +894,7 @@ Security: Token sent in request body (not URL!)`;
                 userEmail: userData.userEmail
             });
 
-            return `${VERCEL_URL}/?${params.toString()}`;
+            return `${getGiftsAppUrl()}/?${params.toString()}`;
         }
 
         // Build my submissions URL
@@ -869,7 +907,7 @@ Security: Token sent in request body (not URL!)`;
                 userEmail: userData.userEmail
             });
 
-            return `${VERCEL_URL}/my-submissions?${params.toString()}`;
+            return `${getGiftsAppUrl()}/my-submissions?${params.toString()}`;
         }
     </script>
 </body>
