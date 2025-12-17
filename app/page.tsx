@@ -282,12 +282,6 @@ export default function FormPage() {
                 View My Submissions
               </button>
             </Link>
-            <button 
-              onClick={() => window.close()}
-              className="btn btn-secondary"
-            >
-              Close
-            </button>
           </div>
         </div>
       </div>
