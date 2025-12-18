@@ -335,66 +335,32 @@
             <p>Employee Dashboard</p>
         </div>
 
-        <!-- Login Form (shown first) -->
-        <div id="login-section" class="login-container">
+        <!-- Environment Selection (shown first) -->
+        <div id="env-selection-section" class="login-container">
             <div class="card login-card">
-                <h2>🔐 Portal Login</h2>
-                <p class="subtitle">Please login to access the portal</p>
+                <h2>🌍 Select Environment</h2>
+                <p class="subtitle">Choose which Gifts App environment to connect to</p>
 
                 <div class="alert alert-info">
-                    ℹ️ This is a mock authentication system for testing
+                    ℹ️ This is a mock application for testing the Gift Request System
                 </div>
 
                 <!-- Environment Selector -->
                 <div class="form-group">
-                    <label for="environmentSelect">🌍 Environment</label>
+                    <label for="environmentSelect">Environment</label>
                     <select id="environmentSelect" style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
                         <option value="local">💻 Local (localhost:3000)</option>
                         <option value="development">🔧 Development (Vercel Preview)</option>
                         <option value="production">🚀 Production (Vercel)</option>
                     </select>
                     <small style="color: #718096; display: block; margin-top: 0.5rem;">
-                        Select which Gifts App environment to connect to
+                        Your selection will determine which backend database is used
                     </small>
                 </div>
 
-                <div id="loginError" class="alert alert-error" style="display: none;"></div>
-
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="loginUsername">Username</label>
-                        <input 
-                            type="text" 
-                            id="loginUsername" 
-                            placeholder="Enter username"
-                            required
-                            autocomplete="username"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="loginPassword">Password</label>
-                        <input 
-                            type="password" 
-                            id="loginPassword" 
-                            placeholder="Enter password"
-                            required
-                            autocomplete="current-password"
-                        >
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
-                        Login to Portal
-                    </button>
-                </form>
-
-                <div style="margin-top: 2rem; padding: 1rem; background: #f7fafc; border-radius: 8px;">
-                    <h4 style="color: #2d3748; margin-bottom: 0.5rem; font-size: 0.9rem;">Test Credentials</h4>
-                    <div style="font-size: 0.875rem; color: #4a5568;">
-                        <div style="margin-bottom: 0.25rem;"><strong>Username:</strong> admin</div>
-                        <div><strong>Password:</strong> admin123</div>
-                    </div>
-                </div>
+                <button id="proceedBtn" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    Proceed →
+                </button>
             </div>
         </div>
 
@@ -499,10 +465,10 @@
             </div>
         </div>
 
-        <!-- Logout Button -->
+        <!-- Change Environment Button -->
         <div style="margin-top: 2rem; text-align: center;">
-            <button onclick="logoutFromPortal()" class="btn btn-secondary">
-                🚪 Logout from Portal
+            <button onclick="changeEnvironment()" class="btn btn-secondary">
+                🔄 Change Environment
             </button>
         </div>
         </div>
@@ -560,17 +526,12 @@
                 clearTimeout(inactivityTimer);
             }
 
-            // Only set timer if user is logged in
-            if (localStorage.getItem('portalLoggedIn') === 'true') {
-                inactivityTimer = setTimeout(() => {
-                    // Auto logout
-                    alert('⏱️ You have been logged out due to inactivity (30 minutes).');
-                    localStorage.removeItem('portalLoggedIn');
-                    localStorage.removeItem('portalUsername');
-                    localStorage.removeItem('mockAppUser');
-                    location.reload();
-                }, INACTIVITY_TIMEOUT);
-            }
+            // Set timer for auto return to environment selection
+            inactivityTimer = setTimeout(() => {
+                alert('⏱️ Returning to environment selection due to inactivity (30 minutes).');
+                localStorage.removeItem('mockAppUser');
+                location.reload();
+            }, INACTIVITY_TIMEOUT);
         }
 
         // Track user activity
@@ -579,12 +540,7 @@
             document.addEventListener(event, resetInactivityTimer, true);
         });
 
-        // Clear login state on page load - always start with login screen
-        localStorage.removeItem('portalLoggedIn');
-        localStorage.removeItem('portalUsername');
-        
-        // Check if user is logged into portal (will always be false now)
-        let isPortalLoggedIn = false;
+        // No login required - start with environment selection
         
         // Get selected environment (default to local for testing) - declare early to avoid initialization errors
         let selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'local';
@@ -638,13 +594,8 @@
             }
         }
         
-        // Show/hide sections based on portal login
-        if (isPortalLoggedIn) {
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('main-content').classList.remove('hidden');
-            // Start inactivity timer
-            resetInactivityTimer();
-        }
+        // Show environment selection by default (no login required)
+        // Main content is hidden by default
 
         // Handle environment selection
         if (envSelect) {
@@ -654,88 +605,45 @@
                 
                 // Update environment badges
                 updateEnvironmentBadges();
-                
-                // Show notification
-                let envName, icon;
-                switch(selectedEnvironment) {
-                    case 'production':
-                        envName = 'Production';
-                        icon = '🚀';
-                        break;
-                    case 'development':
-                        envName = 'Development (Vercel Preview)';
-                        icon = '🔧';
-                        break;
-                    case 'local':
-                    default:
-                        envName = 'Local (localhost:3000)';
-                        icon = '💻';
-                        break;
-                }
-                alert(`${icon} Environment switched to ${envName}\n\nGifts App URL: ${getGiftsAppUrl()}`);
             });
         }
         
         // Initialize environment badges on page load
         updateEnvironmentBadges();
 
-        // Handle portal login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Login form submitted');
-            
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            const errorDiv = document.getElementById('loginError');
-            
-            console.log('Username:', username, 'Password:', password);
-            
+        // Handle proceed button click
+        document.getElementById('proceedBtn').addEventListener('click', function() {
             // Save selected environment
             if (envSelect) {
                 selectedEnvironment = envSelect.value;
                 localStorage.setItem('selectedEnvironment', selectedEnvironment);
-                console.log('Environment saved:', selectedEnvironment);
+                console.log('Environment selected:', selectedEnvironment);
             }
             
-            // Simple authentication (in real app, this would be server-side)
-            if (username === 'admin' && password === 'admin123') {
-                console.log('Login successful!');
-                // Login successful
-                localStorage.setItem('portalLoggedIn', 'true');
-                localStorage.setItem('portalUsername', username);
-                
-                // Hide login, show main content
-                const loginSection = document.getElementById('login-section');
-                const mainContent = document.getElementById('main-content');
-                console.log('Login section:', loginSection, 'Main content:', mainContent);
-                
-                loginSection.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-                
-                // Start inactivity timer
-                resetInactivityTimer();
-                
-                errorDiv.style.display = 'none';
-            } else {
-                console.log('Login failed - invalid credentials');
-                // Login failed
-                errorDiv.textContent = '❌ Invalid username or password';
-                errorDiv.style.display = 'block';
-            }
+            // Hide environment selection, show main content
+            const envSection = document.getElementById('env-selection-section');
+            const mainContent = document.getElementById('main-content');
+            
+            envSection.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            
+            // Start inactivity timer
+            resetInactivityTimer();
         });
 
-        // Logout from portal
-        function logoutFromPortal() {
-            if (confirm('Are you sure you want to logout from the portal?')) {
-                // Clear inactivity timer
-                if (inactivityTimer) {
-                    clearTimeout(inactivityTimer);
-                }
-                localStorage.removeItem('portalLoggedIn');
-                localStorage.removeItem('portalUsername');
-                localStorage.removeItem('mockAppUser'); // Clear user data too
-                location.reload();
+        // Change environment function
+        function changeEnvironment() {
+            // Clear inactivity timer
+            if (inactivityTimer) {
+                clearTimeout(inactivityTimer);
             }
+            
+            // Hide main content, show environment selection
+            const envSection = document.getElementById('env-selection-section');
+            const mainContent = document.getElementById('main-content');
+            
+            mainContent.classList.add('hidden');
+            envSection.classList.remove('hidden');
         }
 
         // Tab switching
