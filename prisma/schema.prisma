@@ -25,6 +25,9 @@ model Submission {
   // Status tracking
   status       String   @default("Pending") // "Pending" or "Processed"
   
+  // Additional data from main app (stored as JSON)
+  readOnlyData Json?  // Country, company, department, etc.
+  
   // Timestamps
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

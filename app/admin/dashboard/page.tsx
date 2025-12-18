@@ -330,6 +330,9 @@ export default function AdminDashboardPage() {
               <div className="read-only-item"><strong>User ID:</strong> {selectedSubmission.userId}</div>
               <div className="read-only-item"><strong>Name:</strong> {selectedSubmission.userName}</div>
               <div className="read-only-item"><strong>Email:</strong> {selectedSubmission.userEmail}</div>
+              {selectedSubmission.readOnlyData?.country && (
+                <div className="read-only-item"><strong>Country:</strong> {selectedSubmission.readOnlyData.country}</div>
+              )}
               {selectedSubmission.readOnlyData?.companyName && (
                 <div className="read-only-item"><strong>Company:</strong> {selectedSubmission.readOnlyData.companyName}</div>
               )}
@@ -341,10 +344,27 @@ export default function AdminDashboardPage() {
             <div style={{ marginBottom: '1.5rem' }}>
               <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem' }}>Gift Details</h3>
               <div className="read-only-item"><strong>Duration:</strong> {selectedSubmission.giftType}</div>
-              <div className="read-only-item"><strong>Recipient Username:</strong> {selectedSubmission.recipientUsername}</div>
+              <div className="read-only-item"><strong>Recipient Username:</strong> {selectedSubmission.recipientUsername || 'Not provided'}</div>
               <div className="read-only-item"><strong>Recipient Name:</strong> {selectedSubmission.recipientName}</div>
               <div className="read-only-item"><strong>Recipient Email:</strong> {selectedSubmission.recipientEmail || 'Not provided'}</div>
-              <div className="read-only-item"><strong>Message:</strong> {selectedSubmission.message || 'No message'}</div>
+              {selectedSubmission.readOnlyData?.description && (
+                <div className="read-only-item" style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
+                  <strong>Description:</strong> {selectedSubmission.readOnlyData.description}
+                </div>
+              )}
+              <div className="read-only-item">
+                <strong>Message:</strong>
+                <div style={{ 
+                  wordWrap: 'break-word', 
+                  whiteSpace: 'pre-wrap', 
+                  overflowWrap: 'break-word',
+                  maxWidth: '40ch',
+                  marginTop: '0.5rem',
+                  lineHeight: '1.5'
+                }}>
+                  {selectedSubmission.message || 'No message'}
+                </div>
+              </div>
               <div className="read-only-item"><strong>Status:</strong> <span className={`badge badge-${selectedSubmission.status.toLowerCase()}`}>{selectedSubmission.status}</span></div>
               <div className="read-only-item"><strong>Submitted:</strong> {new Date(selectedSubmission.createdAt).toLocaleString()}</div>
               {selectedSubmission.processedAt && (

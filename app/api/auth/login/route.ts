@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json()
-    const { token, adminToken, userId, userName, userEmail, env } = body
+    const { token, adminToken, userId, userName, userEmail, country, env } = body
 
     // Handle user authentication
     if (token) {
@@ -52,12 +52,19 @@ export async function POST(request: NextRequest) {
         )
       }
 
+      // Build readOnlyData object with optional fields
+      const readOnlyData: any = {}
+      if (country) {
+        readOnlyData.country = country
+      }
+
       // Set secure HTTP-only cookie with user session data
       const sessionData = {
         userId,
         userName,
         userEmail: userEmail || `${userId}@company.com`,
         env: env || 'production',
+        readOnlyData,
         authenticated: true
       }
 

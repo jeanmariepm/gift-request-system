@@ -417,30 +417,45 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="companyName">Company Name</label>
+                    <label for="country">Country</label>
                     <input 
                         type="text" 
-                        id="companyName" 
-                        placeholder="e.g., Acme Corporation"
-                        value="Acme Corporation"
+                        id="country" 
+                        placeholder="e.g., United States"
+                        value="United States"
                     >
                 </div>
 
                 <div class="form-group">
-                    <label for="department">Department</label>
-                    <select id="department">
-                        <option value="">Select Department</option>
-                        <option value="Engineering" selected>Engineering</option>
-                        <option value="Sales">Sales</option>
-                        <option value="Marketing">Marketing</option>
-                        <option value="HR">Human Resources</option>
-                        <option value="Finance">Finance</option>
-                        <option value="Operations">Operations</option>
-                        <option value="IT">Information Technology</option>
-                    </select>
+                    <label for="recipientName">Recipient Name *</label>
+                    <input 
+                        type="text" 
+                        id="recipientName" 
+                        placeholder="Enter recipient's name"
+                        required
+                    >
                 </div>
 
-                <button type="submit" class="btn btn-primary" title="POST to http://localhost:3000/api/auth/login&#10;Payload: { token, userId, userName, userEmail, env }&#10;Then opens authenticated session in new tab">
+                <div class="form-group">
+                    <label for="recipientEmail">Recipient Email Address *</label>
+                    <input 
+                        type="email" 
+                        id="recipientEmail" 
+                        placeholder="Enter recipient's email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="recipientUsername">Recipient Username (Optional)</label>
+                    <input 
+                        type="text" 
+                        id="recipientUsername" 
+                        placeholder="Enter recipient's username"
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary" title="Opens gift request system with URL parameters:&#10;token, userId, userName, userEmail, country, env&#10;Country is included in the authentication flow">
                     Proceed to Gifts App →
                 </button>
             </form>
@@ -598,8 +613,10 @@
             userId: '',
             userName: '',
             userEmail: '',
-            companyName: '',
-            department: ''
+            country: 'United States',
+            recipientName: '',
+            recipientEmail: '',
+            recipientUsername: ''
         };
 
         // Load user data if exists
@@ -609,8 +626,10 @@
             document.getElementById('userId').value = userData.userId || '';
             document.getElementById('userName').value = userData.userName || '';
             document.getElementById('userEmail').value = userData.userEmail || '';
-            document.getElementById('companyName').value = userData.companyName || '';
-            document.getElementById('department').value = userData.department || '';
+            document.getElementById('country').value = userData.country || 'United States';
+            document.getElementById('recipientName').value = userData.recipientName || '';
+            document.getElementById('recipientEmail').value = userData.recipientEmail || '';
+            document.getElementById('recipientUsername').value = userData.recipientUsername || '';
         }
 
         // Admin Panel URL (hardcoded)
@@ -633,8 +652,10 @@
                 userId: document.getElementById('userId').value,
                 userName: document.getElementById('userName').value,
                 userEmail: document.getElementById('userEmail').value || `${document.getElementById('userId').value}@company.com`,
-                companyName: document.getElementById('companyName').value,
-                department: document.getElementById('department').value
+                country: document.getElementById('country').value || 'United States',
+                recipientName: document.getElementById('recipientName').value,
+                recipientEmail: document.getElementById('recipientEmail').value,
+                recipientUsername: document.getElementById('recipientUsername').value
             };
 
             // Store in localStorage
@@ -646,12 +667,12 @@
         });
 
 
-        // Gift Request System URL (hardcoded)
-        const GIFT_SYSTEM_URL = 'https://instant-jeanmarie-mariadassous-projects.vercel.app';
+        // Gift Request System URL - Local development
+        const GIFT_SYSTEM_URL = 'http://localhost:3000';
 
-        // Access tokens for secure access to gift system
-        const USER_ACCESS_TOKEN = 'gift_access_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2';
-        const ADMIN_ACCESS_TOKEN = 'admin_access_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6';
+        // Access tokens for secure access to gift system (matching .env.local)
+        const USER_ACCESS_TOKEN = 'gift_access_dev_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2';
+        const ADMIN_ACCESS_TOKEN = 'admin_access_dev_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6';
 
         // Build gift request URL with parameters
         function buildGiftRequestUrl(baseUrl) {
@@ -663,11 +684,17 @@
             });
 
             // Add optional parameters if they exist
-            if (userData.companyName) {
-                params.append('companyName', userData.companyName);
+            if (userData.country) {
+                params.append('country', userData.country);
             }
-            if (userData.department) {
-                params.append('department', userData.department);
+            if (userData.recipientName) {
+                params.append('recipientName', userData.recipientName);
+            }
+            if (userData.recipientEmail) {
+                params.append('recipientEmail', userData.recipientEmail);
+            }
+            if (userData.recipientUsername) {
+                params.append('recipientUsername', userData.recipientUsername);
             }
 
             return `${baseUrl}/?${params.toString()}`;

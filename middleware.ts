@@ -29,6 +29,10 @@ export function middleware(request: NextRequest) {
     const userId = searchParams.get('userId')
     const userName = searchParams.get('userName')
     const userEmail = searchParams.get('userEmail')
+    const country = searchParams.get('country')
+    const recipientName = searchParams.get('recipientName')
+    const recipientEmail = searchParams.get('recipientEmail')
+    const recipientUsername = searchParams.get('recipientUsername')
     const env = searchParams.get('env') || 'production'
 
     // Debug logging
@@ -53,12 +57,32 @@ export function middleware(request: NextRequest) {
     if (userId && userName) {
       const response = NextResponse.redirect(new URL('/', request.url))
       
+      // Build readOnlyData object with optional fields
+      const readOnlyData: any = {}
+      if (country) {
+        readOnlyData.country = country
+      }
+      
+      // Store recipient fields in session for form pre-filling
+      const formPrefill: any = {}
+      if (recipientName) {
+        formPrefill.recipientName = recipientName
+      }
+      if (recipientEmail) {
+        formPrefill.recipientEmail = recipientEmail
+      }
+      if (recipientUsername) {
+        formPrefill.recipientUsername = recipientUsername
+      }
+      
       // Set secure HTTP-only cookie with user session data
       const sessionData = {
         userId,
         userName,
         userEmail: userEmail || `${userId}@company.com`,
         env,
+        readOnlyData,
+        formPrefill: Object.keys(formPrefill).length > 0 ? formPrefill : undefined,
         authenticated: true
       }
       

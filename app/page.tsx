@@ -22,6 +22,8 @@ interface SessionData {
   userName: string
   userEmail: string
   env: string
+  readOnlyData?: any
+  formPrefill?: any
   authenticated: boolean
 }
 
@@ -46,7 +48,7 @@ export default function FormPage() {
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
-  const [showForm, setShowForm] = useState(false)
+  const [showForm, setShowForm] = useState(true) // Show form by default for new users
   const [error, setError] = useState('')
   
   // Submissions state
@@ -75,6 +77,19 @@ export default function FormPage() {
         setUserName(sessionData.userName)
         setUserEmail(sessionData.userEmail)
         setEnv(sessionData.env)
+        // readOnlyData is available in sessionData.readOnlyData
+        // Pre-fill form with recipient data if available
+        if (sessionData.formPrefill) {
+          if (sessionData.formPrefill.recipientName) {
+            setRecipientName(sessionData.formPrefill.recipientName)
+          }
+          if (sessionData.formPrefill.recipientEmail) {
+            setRecipientEmail(sessionData.formPrefill.recipientEmail)
+          }
+          if (sessionData.formPrefill.recipientUsername) {
+            setRecipientUsername(sessionData.formPrefill.recipientUsername)
+          }
+        }
       } catch (error) {
         console.error('Failed to fetch session:', error)
         router.push('/access-denied')
@@ -185,6 +200,7 @@ export default function FormPage() {
             recipientName,
             recipientEmail,
             message,
+            readOnlyData: session?.readOnlyData || {},
             env
           })
         })
@@ -193,7 +209,9 @@ export default function FormPage() {
       const data = await response.json()
       
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to submit form')
+        const errorMsg = data.error || 'Failed to submit form'
+        const details = data.details ? `: ${data.details}` : ''
+        throw new Error(`${errorMsg}${details}`)
       }
       
       setShowConfirmation(true)
@@ -246,7 +264,7 @@ export default function FormPage() {
       <div className="container">
         <Logo />
         
-        <h1 className="page-title">{editingSubmissionId ? 'Edit Gift Request' : 'Gift Request Form'}</h1>
+        <h1 className="page-title">{editingSubmissionId ? 'Edit Gift Request' : 'Gift Request Details'}</h1>
         
         <div className="card">
           {error && (
@@ -257,13 +275,13 @@ export default function FormPage() {
 
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="recipientName">Recipient Full Name *</label>
+              <label htmlFor="recipientName">Recipient Name *</label>
               <input
                 type="text"
                 id="recipientName"
                 value={recipientName}
                 onChange={(e) => setRecipientName(e.target.value)}
-                placeholder="Enter recipient's full name"
+                placeholder="Enter recipient's name"
                 required
               />
             </div>
@@ -281,29 +299,53 @@ export default function FormPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="recipientUsername">Recipient Username</label>
+              <label htmlFor="recipientUsername">Recipient Username (Optional)</label>
               <input
                 type="text"
                 id="recipientUsername"
                 value={recipientUsername}
                 onChange={(e) => setRecipientUsername(e.target.value)}
-                placeholder="Enter recipient's username (optional)"
+                placeholder="Enter recipient's username"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="giftType">Gift Duration *</label>
-              <select
-                id="giftType"
-                value={giftType}
-                onChange={(e) => setGiftType(e.target.value)}
-                required
-              >
-                <option value="">Select duration</option>
-                <option value="One Month">One Month</option>
-                <option value="Two Months">Two Months</option>
-                <option value="Three Months">Three Months</option>
-              </select>
+              <label htmlFor="giftType">How many months of subscription do you want to gift? IntoBridge will match your gift! *</label>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: '2rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '1rem' }}>
+                  <input
+                    type="radio"
+                    name="giftType"
+                    value="One Month"
+                    checked={giftType === 'One Month'}
+                    onChange={(e) => setGiftType(e.target.value)}
+                    style={{ marginRight: '0.75rem', width: '18px', height: '18px', cursor: 'pointer' }}
+                  />
+                  One Month
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '1rem' }}>
+                  <input
+                    type="radio"
+                    name="giftType"
+                    value="Two Months"
+                    checked={giftType === 'Two Months'}
+                    onChange={(e) => setGiftType(e.target.value)}
+                    style={{ marginRight: '0.75rem', width: '18px', height: '18px', cursor: 'pointer' }}
+                  />
+                  Two Months
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '1rem' }}>
+                  <input
+                    type="radio"
+                    name="giftType"
+                    value="Three Months"
+                    checked={giftType === 'Three Months'}
+                    onChange={(e) => setGiftType(e.target.value)}
+                    style={{ marginRight: '0.75rem', width: '18px', height: '18px', cursor: 'pointer' }}
+                  />
+                  Three Months
+                </label>
+              </div>
             </div>
 
             <div className="form-group">
@@ -329,7 +371,7 @@ export default function FormPage() {
                 className="btn btn-primary"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Submitting...' : 'Submit Request'}
+                {isSubmitting ? 'Submitting...' : 'Submit'}
               </button>
               <button 
                 type="button"
@@ -374,13 +416,13 @@ export default function FormPage() {
               }}
               className="btn btn-primary"
             >
-              Submit Another Request
+              Make another gift request
             </button>
             <button 
               onClick={() => setShowConfirmation(false)}
               className="btn btn-secondary"
             >
-              View My Submissions
+              View my gift requests
             </button>
           </div>
         </div>
@@ -406,7 +448,7 @@ export default function FormPage() {
               onClick={() => setShowForm(true)}
               className="btn btn-primary"
             >
-              + New Request
+              Create A Gift Request
             </button>
             <button 
               onClick={() => window.close()}
@@ -445,7 +487,7 @@ export default function FormPage() {
               <thead>
                 <tr>
                   <th>Date & Time</th>
-                  <th>Duration</th>
+                  <th>Gift Type</th>
                   <th>Recipient Username</th>
                   <th>Recipient Name</th>
                   <th>Recipient Email</th>
@@ -537,7 +579,7 @@ export default function FormPage() {
                   </div>
                   
                   <div className="mobile-card-field">
-                    <label>Duration:</label>
+                    <label>Gift Type:</label>
                     <span>{submission.giftType}</span>
                   </div>
                   

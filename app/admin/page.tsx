@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Logo from '../components/Logo'
 
-// Admin access token (separate from user access token)
-const REQUIRED_ADMIN_TOKEN = 'admin_access_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6'
+// Admin access token - matches ADMIN_ACCESS_TOKEN from .env.local
+// Note: Client-side validation is minimal since middleware already validates
+// This is just for UX - the real validation happens server-side
+const REQUIRED_ADMIN_TOKEN = 'admin_access_dev_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6'
 
 export default function AdminLoginPage() {
   const router = useRouter()

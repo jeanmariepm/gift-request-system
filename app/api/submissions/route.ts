@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { userId, userName, userEmail, giftType, recipientUsername, recipientName, recipientEmail, message, env } = body
+    const { userId, userName, userEmail, giftType, recipientUsername, recipientName, recipientEmail, message, readOnlyData, env } = body
     
     // Validate required fields (recipientUsername is optional, recipientEmail is required)
     if (!userId || !userName || !giftType || !recipientName || !recipientEmail) {
@@ -52,6 +52,12 @@ export async function POST(request: NextRequest) {
     const dbUrl = getDatabaseUrl(env)
     const prisma = getPrismaClient(dbUrl)
     
+    // Format readOnlyData properly for JSON storage
+    let formattedReadOnlyData = null
+    if (readOnlyData && Object.keys(readOnlyData).length > 0) {
+      formattedReadOnlyData = readOnlyData
+    }
+    
     const submission = await prisma.submission.create({
       data: {
         userId,
@@ -62,14 +68,20 @@ export async function POST(request: NextRequest) {
         recipientUsername: recipientUsername || null,
         giftType,
         message: message || null,
-        status: 'Pending'
+        status: 'Pending',
+        readOnlyData: formattedReadOnlyData
       }
     })
     
     return NextResponse.json({ success: true, submission }, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating submission:', error)
-    return NextResponse.json({ error: 'Failed to create submission' }, { status: 500 })
+    // Return more detailed error message for debugging
+    const errorMessage = error?.message || 'Failed to create submission'
+    return NextResponse.json({ 
+      error: 'Failed to create submission',
+      details: errorMessage 
+    }, { status: 500 })
   }
 }
 

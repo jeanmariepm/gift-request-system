@@ -19,6 +19,8 @@ export async function GET(request: NextRequest) {
       userName: sessionData.userName,
       userEmail: sessionData.userEmail,
       env: sessionData.env,
+      readOnlyData: sessionData.readOnlyData || {},
+      formPrefill: sessionData.formPrefill || {},
       authenticated: sessionData.authenticated
     })
   } catch (error) {

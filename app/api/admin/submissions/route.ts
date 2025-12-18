@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { getPrismaClient } from '@/lib/prisma'
+import { getDatabaseUrl } from '@/lib/db-selector'
 import { isAdminAuthenticated } from '@/lib/auth'
 
 // GET - Fetch all submissions for admin
-export async function GET() {
+export async function GET(request: NextRequest) {
   const isAuth = await isAdminAuthenticated()
   
   if (!isAuth) {
@@ -11,6 +12,14 @@ export async function GET() {
   }
   
   try {
+    // Get environment from query params or default to production
+    const { searchParams } = new URL(request.url)
+    const env = searchParams.get('env') || 'production'
+    
+    // Get appropriate database based on environment
+    const dbUrl = getDatabaseUrl(env)
+    const prisma = getPrismaClient(dbUrl)
+    
     const submissions = await prisma.submission.findMany({
       orderBy: { createdAt: 'desc' }
     })
