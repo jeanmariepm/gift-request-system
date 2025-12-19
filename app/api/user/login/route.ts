@@ -98,8 +98,8 @@ export async function POST(request: NextRequest) {
     
     response.cookies.set('user_session', JSON.stringify(sessionData), {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true, // Always secure (required for SameSite=none)
+      sameSite: 'none', // Allow cross-origin cookie usage
       maxAge: 60 * 60 * 8, // 8 hours
       path: '/'
     })
