@@ -569,7 +569,6 @@
             // Set timer for auto return to environment selection
             inactivityTimer = setTimeout(() => {
                 alert('⏱️ Returning to environment selection due to inactivity (30 minutes).');
-                localStorage.removeItem('mockAppUser');
                 location.reload();
             }, INACTIVITY_TIMEOUT);
         }
@@ -712,18 +711,7 @@
             recipientUsername: ''
         };
 
-        // Load user data if exists
-        if (localStorage.getItem('mockAppUser')) {
-            userData = JSON.parse(localStorage.getItem('mockAppUser'));
-            // Pre-fill form fields
-            document.getElementById('userId').value = userData.userId || '';
-            document.getElementById('userName').value = userData.userName || '';
-            document.getElementById('userEmail').value = userData.userEmail || '';
-            document.getElementById('country').value = userData.country || 'United States';
-            document.getElementById('recipientName').value = userData.recipientName || '';
-            document.getElementById('recipientEmail').value = userData.recipientEmail || '';
-            document.getElementById('recipientUsername').value = userData.recipientUsername || '';
-        }
+        // User data is stored in the userData variable (no persistence needed)
 
                 // Add detailed info on hover for admin button (for developers)
                 const adminBtn = document.getElementById('adminLoginBtn');
@@ -837,8 +825,7 @@ Cookie is HTTP-only, not accessible via JavaScript`;
                 recipientUsername: document.getElementById('recipientUsername').value
             };
 
-            // Store in localStorage
-            localStorage.setItem('mockAppUser', JSON.stringify(userData));
+            // User data is now stored in the userData variable (no persistence needed)
 
             const currentEnv = getCurrentEnvironment();
             
