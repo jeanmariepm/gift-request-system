@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { isAdminAuthenticated } from '@/lib/auth'
 
+export const dynamic = 'force-dynamic'
+
 // PATCH - Update submission status
 export async function PATCH(
   request: NextRequest,
