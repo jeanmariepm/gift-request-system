@@ -13,17 +13,28 @@ export async function POST(request: NextRequest) {
     
     const token = authHeader.replace('Bearer ', '').trim()
     
-    // Get expected token (configured per Vercel environment)
-    const expectedToken = (process.env.ADMIN_ACCESS_TOKEN || '').trim()
+    // Extract user data from POST body
+    const body = await request.json()
+    const { userId, userName, userEmail, country, recipientName, recipientEmail, recipientUsername } = body
     
-    console.log('Admin token validation:', {
+    if (!userId || !userName) {
+      return NextResponse.json(
+        { error: 'userId and userName are required' },
+        { status: 400 }
+      )
+    }
+    
+    // Get expected token (configured per Vercel environment)
+    const expectedToken = (process.env.USER_ACCESS_TOKEN || '').trim()
+    
+    console.log('User token validation:', {
       receivedTokenLength: token.length,
       expectedTokenLength: expectedToken.length,
       matches: token === expectedToken
     })
     
     if (!expectedToken) {
-      console.error('ADMIN_ACCESS_TOKEN not configured')
+      console.error('USER_ACCESS_TOKEN not configured')
       return NextResponse.json(
         { error: 'Token not configured for this environment' },
         { status: 500 }
@@ -33,20 +44,40 @@ export async function POST(request: NextRequest) {
     if (token !== expectedToken) {
       console.log('Token validation failed')
       return NextResponse.json(
-        { error: 'Invalid admin token' },
+        { error: 'Invalid access token' },
         { status: 401 }
       )
     }
     
     console.log('Token validation succeeded')
     
-    // Set HTTP-only cookie for admin session
+    // Build session data
+    const readOnlyData: any = {}
+    if (country) {
+      readOnlyData.country = country
+    }
+    
+    const formPrefill: any = {}
+    if (recipientName) formPrefill.recipientName = recipientName
+    if (recipientEmail) formPrefill.recipientEmail = recipientEmail
+    if (recipientUsername) formPrefill.recipientUsername = recipientUsername
+    
+    const sessionData = {
+      userId,
+      userName,
+      userEmail: userEmail || `${userId}@company.com`,
+      readOnlyData,
+      formPrefill: Object.keys(formPrefill).length > 0 ? formPrefill : undefined,
+      authenticated: true
+    }
+    
+    // Set HTTP-only cookie
     const response = NextResponse.json({ 
       success: true,
-      redirectUrl: '/admin/dashboard'
+      redirectUrl: '/'
     })
     
-    response.cookies.set('admin_session', JSON.stringify({ authenticated: true }), {
+    response.cookies.set('user_session', JSON.stringify(sessionData), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -57,7 +88,7 @@ export async function POST(request: NextRequest) {
     return response
     
   } catch (error) {
-    console.error('Admin login error:', error)
+    console.error('User login error:', error)
     return NextResponse.json(
       { error: 'Login failed' },
       { status: 500 }

@@ -6,15 +6,14 @@ import { getDatabaseUrl } from '@/lib/db-selector'
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const userId = searchParams.get('userId')
-  const env = searchParams.get('env')
   
   if (!userId) {
     return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
   }
   
   try {
-    // Get appropriate database based on environment
-    const dbUrl = getDatabaseUrl(env)
+    // Get database URL (configured per Vercel environment)
+    const dbUrl = getDatabaseUrl()
     const prisma = getPrismaClient(dbUrl)
     
     const submissions = await prisma.submission.findMany({
@@ -33,7 +32,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { userId, userName, userEmail, giftType, recipientUsername, recipientName, recipientEmail, message, readOnlyData, env } = body
+    const { userId, userName, userEmail, giftType, recipientUsername, recipientName, recipientEmail, message, readOnlyData } = body
     
     // Validate required fields (recipientUsername is optional, recipientEmail is required)
     if (!userId || !userName || !giftType || !recipientName || !recipientEmail) {
@@ -48,8 +47,8 @@ export async function POST(request: NextRequest) {
     // Use a default email if not provided
     const finalUserEmail = userEmail || `${userId}@company.com`
     
-    // Get appropriate database based on environment
-    const dbUrl = getDatabaseUrl(env)
+    // Get database URL (configured per Vercel environment)
+    const dbUrl = getDatabaseUrl()
     const prisma = getPrismaClient(dbUrl)
     
     // Format readOnlyData properly for JSON storage

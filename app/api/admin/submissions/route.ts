@@ -12,12 +12,8 @@ export async function GET(request: NextRequest) {
   }
   
   try {
-    // Get environment from query params or default to production
-    const { searchParams } = new URL(request.url)
-    const env = searchParams.get('env') || 'production'
-    
-    // Get appropriate database based on environment
-    const dbUrl = getDatabaseUrl(env)
+    // Get database URL (configured per Vercel environment)
+    const dbUrl = getDatabaseUrl()
     const prisma = getPrismaClient(dbUrl)
     
     const submissions = await prisma.submission.findMany({

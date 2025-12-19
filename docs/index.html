@@ -532,27 +532,29 @@
         // IMPORTANT: These are DEV tokens for local/development testing only
         // Production tokens should be different and stored securely
         const ACCESS_TOKENS = {
-            // Dev tokens (for local and development environments)
-            dev: {
+            local: {
                 user: 'gift_access_dev_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2',
-                admin: 'admin_access_dev_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6'
+                admin: 'gift_admin_dev_f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6'
             },
-            // Production tokens (currently same as dev for testing)
-            prod: {
+            development: {
                 user: 'gift_access_dev_d7f8e9a0b1c2d3e4f5a6b7c8d9e0f1a2',
-                admin: 'admin_access_dev_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6'
+                admin: 'gift_admin_dev_f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6'
+            },
+            production: {
+                user: 'gift_access_prod_a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6',
+                admin: 'gift_admin_prod_z9y8x7w6v5u4t3s2r1q0p9o8n7m6l5k4'
             }
         };
 
         // Get tokens based on selected environment
         function getUserAccessToken() {
             const env = getCurrentEnvironment();
-            return (env === 'production') ? ACCESS_TOKENS.prod.user : ACCESS_TOKENS.dev.user;
+            return ACCESS_TOKENS[env]?.user || ACCESS_TOKENS.local.user;
         }
 
         function getAdminAccessToken() {
             const env = getCurrentEnvironment();
-            return (env === 'production') ? ACCESS_TOKENS.prod.admin : ACCESS_TOKENS.dev.admin;
+            return ACCESS_TOKENS[env]?.admin || ACCESS_TOKENS.local.admin;
         }
 
         // Auto-logout after inactivity
@@ -728,42 +730,58 @@
                 const adminBtn = document.getElementById('adminLoginBtn');
                 if (adminBtn) {
                     adminBtn.addEventListener('mouseenter', function() {
-                        const params = new URLSearchParams({
-                            adminToken: getAdminAccessToken(),
-                            env: getCurrentEnvironment()
-                        });
-                        
                         const tooltipText = `🔐 ADMIN AUTHENTICATION (Developer Info)
-                        
-URL: ${getGiftsAppUrl()}/admin?${params.toString()}
+
+URL: ${getGiftsAppUrl()}/api/admin/login
+Method: POST
+Authorization: Bearer ${getAdminAccessToken()}
+
+Body: {} (empty - token is in header)
 
 Flow:
-1. Browser navigates to /admin with token parameter
-2. Middleware validates token and sets secure cookie
-3. Middleware redirects to /admin/dashboard (clean URL)
-4. Token removed from URL - only cookie remains
+1. POST request with Bearer token in Authorization header
+2. API route validates token and sets secure cookie
+3. API returns success with redirectUrl: /admin/dashboard
+4. Browser navigates to dashboard
 
-Security: Cookie is HTTP-only, not accessible via JavaScript`;
+Security: Bearer token in header (OAuth 2.0 standard)
+Cookie is HTTP-only, not accessible via JavaScript`;
                         
                         this.setAttribute('title', tooltipText);
                     });
                 }
 
         // Handle admin login button click
-        document.getElementById('adminLoginBtn').addEventListener('click', function() {
-            // Build admin auth URL (token will be validated by middleware, then removed from URL)
-            const params = new URLSearchParams({
-                adminToken: getAdminAccessToken(),
-                env: getCurrentEnvironment()
-            });
+        document.getElementById('adminLoginBtn').addEventListener('click', async function() {
+            const currentEnv = getCurrentEnvironment();
             
-            const adminUrl = `${getGiftsAppUrl()}/admin?${params.toString()}`;
-            
-            // Open in new window/tab
-            const newWindow = window.open(adminUrl, '_blank');
-            
-            if (!newWindow) {
-                alert('Please allow popups for this site to access the admin panel');
+            try {
+                console.log('Admin authentication with Bearer token to:', `${getGiftsAppUrl()}/api/admin/login`);
+                
+                // Send POST request with Bearer token in header
+                const response = await fetch(`${getGiftsAppUrl()}/api/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getAdminAccessToken()}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({}),
+                    credentials: 'include'
+                });
+                
+                console.log('Admin auth response status:', response.status);
+                const data = await response.json();
+                console.log('Admin auth response data:', data);
+                
+                if (response.ok && data.success) {
+                    // Navigate to admin dashboard in same tab
+                    window.location.href = `${getGiftsAppUrl()}${data.redirectUrl}`;
+                } else {
+                    alert(`Admin authentication failed: ${data.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Admin auth error:', error);
+                alert(`Failed to connect to admin panel: ${error.message}`);
             }
         });
 
@@ -771,29 +789,35 @@ Security: Cookie is HTTP-only, not accessible via JavaScript`;
         const userFormBtn = document.querySelector('#userForm button[type="submit"]');
         if (userFormBtn) {
             userFormBtn.addEventListener('mouseenter', function() {
-                // Build payload preview
+                // Build payload preview (without token - it's in header now)
                 const payload = {
-                    token: getUserAccessToken(),
                     userId: document.getElementById('userId').value || 'emp12345',
                     userName: document.getElementById('userName').value || 'John Doe',
                     userEmail: document.getElementById('userEmail').value || 'john.doe@company.com',
-                    env: getCurrentEnvironment(),
                     country: document.getElementById('country').value || 'United States',
                     recipientName: document.getElementById('recipientName').value || '',
                     recipientEmail: document.getElementById('recipientEmail').value || '',
                     recipientUsername: document.getElementById('recipientUsername').value || ''
                 };
                 
-                const tooltipText = `🔐 SECURE POST AUTHENTICATION (Developer Info)
-                
-URL: ${getGiftsAppUrl()}/api/auth/login
+                const tooltipText = `🔐 BEARER TOKEN AUTHENTICATION (Developer Info)
+
+URL: ${getGiftsAppUrl()}/api/user/login
 Method: POST
+Authorization: Bearer ${getUserAccessToken()}
 Content-Type: application/json
 
-Payload:
+Body:
 ${JSON.stringify(payload, null, 2)}
 
-Security: Token sent in request body (not URL!)`;
+Flow:
+1. POST request with Bearer token in Authorization header
+2. API route validates token and sets secure cookie
+3. API returns success with redirectUrl: /
+4. Browser navigates to Gifts App
+
+Security: Bearer token in header (OAuth 2.0 standard)
+Cookie is HTTP-only, not accessible via JavaScript`;
                 
                 this.setAttribute('title', tooltipText);
             });
@@ -819,77 +843,22 @@ Security: Token sent in request body (not URL!)`;
 
             const currentEnv = getCurrentEnvironment();
             
-            // For remote environments (Development/Production), use direct URL navigation
-            // This ensures the cookie is set in the correct domain
-            if (currentEnv === 'development' || currentEnv === 'production') {
-                // Build URL with token parameters (middleware will handle cookie setting)
-                const params = new URLSearchParams({
-                    token: getUserAccessToken(),
-                    env: currentEnv,
-                    userId: userData.userId,
-                    userName: userData.userName,
-                    userEmail: userData.userEmail
-                });
-                
-                // Add optional parameters if they exist
-                if (userData.country) {
-                    params.append('country', userData.country);
-                }
-                if (userData.recipientName) {
-                    params.append('recipientName', userData.recipientName);
-                }
-                if (userData.recipientEmail) {
-                    params.append('recipientEmail', userData.recipientEmail);
-                }
-                if (userData.recipientUsername) {
-                    params.append('recipientUsername', userData.recipientUsername);
-                }
-                
-                const userUrl = `${getGiftsAppUrl()}/?${params.toString()}`;
-                
-                // Open in new window/tab - middleware will validate token and set cookie
-                const newWindow = window.open(userUrl, '_blank');
-                
-                if (!newWindow) {
-                    alert('Please allow popups for this site to access the Gifts App');
-                }
-                return;
-            }
-
-            // For local environment, use POST method (same-origin, more secure)
-            // Open new window FIRST (to avoid popup blockers)
-            const newWindow = window.open('about:blank', '_blank');
-            
-            if (!newWindow) {
-                alert('Please allow popups for this site');
-                return;
-            }
-
-            // Show loading message in new window
-            newWindow.document.write('<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2>🔐 Authenticating securely...</h2><p>Please wait while we verify your credentials.</p></body></html>');
-
             try {
-                console.log('Attempting authentication to:', `${getGiftsAppUrl()}/api/auth/login`);
-                console.log('Payload:', {
-                    token: getUserAccessToken(),
-                    userId: userData.userId,
-                    userName: userData.userName,
-                    userEmail: userData.userEmail,
-                    env: currentEnv
-                });
-
-                // Send POST request with token in body
-                const response = await fetch(`${getGiftsAppUrl()}/api/auth/login`, {
+                console.log('User authentication with Bearer token to:', `${getGiftsAppUrl()}/api/user/login`);
+                console.log('Environment:', currentEnv);
+                console.log('User data:', userData);
+                
+                // Send POST request with Bearer token in Authorization header
+                const response = await fetch(`${getGiftsAppUrl()}/api/user/login`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getUserAccessToken()}`,
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        token: getUserAccessToken(),
                         userId: userData.userId,
                         userName: userData.userName,
                         userEmail: userData.userEmail,
-                        env: currentEnv,
                         country: userData.country,
                         recipientName: userData.recipientName,
                         recipientEmail: userData.recipientEmail,
@@ -898,19 +867,19 @@ Security: Token sent in request body (not URL!)`;
                     credentials: 'include'
                 });
 
-                console.log('Response status:', response.status);
+                console.log('User auth response status:', response.status);
                 const data = await response.json();
-                console.log('Response data:', data);
+                console.log('User auth response data:', data);
 
                 if (response.ok && data.success) {
-                    // Redirect the new window to the app
-                    newWindow.location.href = `${getGiftsAppUrl()}${data.redirectTo}`;
+                    // Navigate to Gifts App in same tab
+                    window.location.href = `${getGiftsAppUrl()}${data.redirectUrl}`;
                 } else {
-                    newWindow.document.write(`<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2 style="color: #e53e3e;">❌ Authentication Failed</h2><p>${data.error || 'Unknown error'}</p><p style="color: #666; font-size: 0.9rem;">Check browser console (F12) for details</p></body></html>`);
+                    alert(`Authentication failed: ${data.error || 'Unknown error'}`);
                 }
             } catch (error) {
-                console.error('Detailed auth error:', error);
-                newWindow.document.write(`<html><body style="font-family: Arial; text-align: center; padding: 50px;"><h2 style="color: #e53e3e;">❌ Connection Error</h2><p>Failed to connect to the server.</p><p style="color: #666; font-size: 0.9rem;">Error: ${error.message}</p><p style="color: #666; font-size: 0.9rem;">Check browser console (F12) for details</p></body></html>`);
+                console.error('User auth error:', error);
+                alert(`Failed to connect to Gifts App: ${error.message}`);
             }
         });
 

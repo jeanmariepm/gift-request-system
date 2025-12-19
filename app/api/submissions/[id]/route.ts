@@ -9,7 +9,7 @@ export async function PUT(
 ) {
   try {
     const body = await request.json()
-    const { giftType, recipientUsername, recipientName, recipientEmail, message, env } = body
+    const { giftType, recipientUsername, recipientName, recipientEmail, message } = body
     const { id } = params
     
     // Validate required fields
@@ -22,8 +22,8 @@ export async function PUT(
       return NextResponse.json({ error: 'Message must be 1000 characters or less' }, { status: 400 })
     }
     
-    // Get appropriate database based on environment
-    const dbUrl = getDatabaseUrl(env)
+    // Get database URL (configured per Vercel environment)
+    const dbUrl = getDatabaseUrl()
     const prisma = getPrismaClient(dbUrl)
     
     // First, check if the submission exists and is pending
@@ -65,12 +65,10 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { searchParams } = new URL(request.url)
-    const env = searchParams.get('env') || 'production'
     const { id } = params
     
-    // Get appropriate database based on environment
-    const dbUrl = getDatabaseUrl(env)
+    // Get database URL (configured per Vercel environment)
+    const dbUrl = getDatabaseUrl()
     const prisma = getPrismaClient(dbUrl)
     
     // First, check if the submission exists and is pending
