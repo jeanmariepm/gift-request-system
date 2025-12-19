@@ -1,18 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// CORS headers to allow cross-origin requests
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+// CORS headers to allow cross-origin requests with credentials
+function getCorsHeaders(origin: string | null) {
+  return {
+    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Credentials': 'true',
+  }
 }
 
 // Handle preflight OPTIONS request
 export async function OPTIONS(request: NextRequest) {
-  return NextResponse.json({}, { headers: corsHeaders })
+  const origin = request.headers.get('origin')
+  return NextResponse.json({}, { headers: getCorsHeaders(origin) })
 }
 
 export async function POST(request: NextRequest) {
+  const origin = request.headers.get('origin')
+  const corsHeaders = getCorsHeaders(origin)
+  
   try {
     // Extract Bearer token from Authorization header
     const authHeader = request.headers.get('authorization')
