@@ -29,7 +29,6 @@ export default function AdminDashboardPage() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'Pending' | 'Processed' | 'Cancelled'>('all')
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null)
   const [sortBy, setSortBy] = useState<'date' | 'user' | 'recipientEmail'>('date')
-  const [env, setEnv] = useState('production')
   const [isLoadingSession, setIsLoadingSession] = useState(true)
 
   // Fetch admin session on mount
@@ -53,7 +52,6 @@ export default function AdminDashboardPage() {
         }
         const sessionData = await response.json()
         console.log('Admin session data:', sessionData)
-        setEnv(sessionData.env || 'production')
       } catch (error) {
         console.error('Failed to fetch admin session:', error)
         router.push('/admin')
@@ -69,11 +67,11 @@ export default function AdminDashboardPage() {
     if (!isLoadingSession) {
       fetchSubmissions()
     }
-  }, [isLoadingSession, env])
+  }, [isLoadingSession])
 
   const fetchSubmissions = async () => {
     try {
-      const response = await fetch(`/api/admin/submissions?env=${env}`)
+      const response = await fetch(`/api/admin/submissions`)
       
       if (response.status === 401) {
         router.push('/admin')
@@ -96,7 +94,7 @@ export default function AdminDashboardPage() {
 
   const handleStatusChange = async (submissionId: string, newStatus: string) => {
     try {
-      const response = await fetch(`/api/admin/submissions/${submissionId}?env=${env}`, {
+      const response = await fetch(`/api/admin/submissions/${submissionId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

@@ -24,8 +24,7 @@ export async function GET(request: NextRequest) {
     console.log('Admin session data parsed:', sessionData)
     
     return NextResponse.json({
-      authenticated: sessionData.authenticated,
-      env: sessionData.env
+      authenticated: sessionData.authenticated
     })
   } catch (error) {
     console.error('Error reading admin session:', error)
