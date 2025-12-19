@@ -584,7 +584,7 @@
         // No login required - start with environment selection
         
         // Get selected environment (default to local for testing) - declare early to avoid initialization errors
-        let selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'local';
+        let selectedEnvironment = 'local';
         
         // Get environment selector element
         const envSelect = document.getElementById('environmentSelect');
@@ -657,7 +657,6 @@
             // Save selected environment
             if (envSelect) {
                 selectedEnvironment = envSelect.value;
-                localStorage.setItem('selectedEnvironment', selectedEnvironment);
                 console.log('Environment selected:', selectedEnvironment);
             }
             
@@ -667,6 +666,9 @@
             
             envSection.classList.add('hidden');
             mainContent.classList.remove('hidden');
+            
+            // Update environment badges to reflect the selected environment
+            updateEnvironmentBadges();
             
             // Start inactivity timer
             resetInactivityTimer();
