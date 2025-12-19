@@ -524,8 +524,7 @@
 
         // Function to get the current Gifts App URL based on selected environment
         function getGiftsAppUrl() {
-            const env = localStorage.getItem('selectedEnvironment') || 'local';
-            return ENVIRONMENT_URLS[env] || ENVIRONMENT_URLS.local;
+            return ENVIRONMENT_URLS[selectedEnvironment] || ENVIRONMENT_URLS.local;
         }
 
         // Access tokens for secure access to gift system
@@ -596,7 +595,6 @@
 
         // Get current environment identifier
         function getCurrentEnvironment() {
-            selectedEnvironment = localStorage.getItem('selectedEnvironment') || 'local';
             return selectedEnvironment;
         }
 
@@ -642,7 +640,6 @@
         if (envSelect) {
             envSelect.addEventListener('change', function() {
                 selectedEnvironment = this.value;
-                localStorage.setItem('selectedEnvironment', selectedEnvironment);
                 
                 // Update environment badges
                 updateEnvironmentBadges();
@@ -657,7 +654,6 @@
             // Save selected environment
             if (envSelect) {
                 selectedEnvironment = envSelect.value;
-                localStorage.setItem('selectedEnvironment', selectedEnvironment);
                 console.log('Environment selected:', selectedEnvironment);
             }
             
