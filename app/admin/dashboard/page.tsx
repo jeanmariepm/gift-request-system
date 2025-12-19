@@ -71,7 +71,9 @@ export default function AdminDashboardPage() {
 
   const fetchSubmissions = async () => {
     try {
-      const response = await fetch(`/api/admin/submissions`)
+      const response = await fetch(`/api/admin/submissions`, {
+        credentials: 'include'
+      })
       
       if (response.status === 401) {
         router.push('/admin')
@@ -97,6 +99,7 @@ export default function AdminDashboardPage() {
       const response = await fetch(`/api/admin/submissions/${submissionId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ 
           status: newStatus,
           processedBy: 'admin' // You could store admin username from login

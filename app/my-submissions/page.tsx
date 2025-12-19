@@ -55,7 +55,9 @@ export default function MySubmissionsPage() {
 
   const fetchSubmissions = async () => {
     try {
-      const response = await fetch(`/api/submissions?userId=${userId}`)
+      const response = await fetch(`/api/submissions?userId=${userId}`, {
+        credentials: 'include'
+      })
       const data = await response.json()
       
       if (!response.ok) {

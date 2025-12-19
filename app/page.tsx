@@ -66,7 +66,9 @@ export default function FormPage() {
         // Small delay to ensure cookie is fully set after redirect
         await new Promise(resolve => setTimeout(resolve, 100))
         
-        const response = await fetch('/api/session')
+        const response = await fetch('/api/session', {
+          credentials: 'include'
+        })
         if (!response.ok) {
           router.push('/access-denied')
           return
@@ -109,7 +111,9 @@ export default function FormPage() {
 
   const fetchSubmissions = async () => {
     try {
-      const response = await fetch(`/api/submissions?userId=${userId}&env=${env}`)
+      const response = await fetch(`/api/submissions?userId=${userId}&env=${env}`, {
+        credentials: 'include'
+      })
       const data = await response.json()
       
       if (!response.ok) {
@@ -142,7 +146,8 @@ export default function FormPage() {
 
     try {
       const response = await fetch(`/api/submissions/${submissionId}?env=${env}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       })
 
       const data = await response.json()
@@ -177,6 +182,7 @@ export default function FormPage() {
         response = await fetch(`/api/submissions/${editingSubmissionId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({
             giftType,
             recipientUsername,
@@ -191,6 +197,7 @@ export default function FormPage() {
         response = await fetch('/api/submissions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({
             userId,
             userName,
