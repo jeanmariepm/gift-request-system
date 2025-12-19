@@ -420,7 +420,46 @@
                     >
                 </div>
 
-                <button type="submit" class="btn btn-primary">
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <input 
+                        type="text" 
+                        id="country" 
+                        placeholder="e.g., United States"
+                        value="United States"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="recipientName">Recipient Name *</label>
+                    <input 
+                        type="text" 
+                        id="recipientName" 
+                        placeholder="Enter recipient's name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="recipientEmail">Recipient Email Address *</label>
+                    <input 
+                        type="email" 
+                        id="recipientEmail" 
+                        placeholder="Enter recipient's email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="recipientUsername">Recipient Username (Optional)</label>
+                    <input 
+                        type="text" 
+                        id="recipientUsername" 
+                        placeholder="Enter recipient's username"
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary" title="Opens gift request system with URL parameters:&#10;token, userId, userName, userEmail, country, env&#10;Country is included in the authentication flow">
                     Proceed to Gifts App →
                 </button>
             </form>
@@ -665,7 +704,11 @@
         let userData = {
             userId: '',
             userName: '',
-            userEmail: ''
+            userEmail: '',
+            country: 'United States',
+            recipientName: '',
+            recipientEmail: '',
+            recipientUsername: ''
         };
 
         // Load user data if exists
@@ -675,6 +718,10 @@
             document.getElementById('userId').value = userData.userId || '';
             document.getElementById('userName').value = userData.userName || '';
             document.getElementById('userEmail').value = userData.userEmail || '';
+            document.getElementById('country').value = userData.country || 'United States';
+            document.getElementById('recipientName').value = userData.recipientName || '';
+            document.getElementById('recipientEmail').value = userData.recipientEmail || '';
+            document.getElementById('recipientUsername').value = userData.recipientUsername || '';
         }
 
                 // Add detailed info on hover for admin button (for developers)
@@ -730,7 +777,11 @@ Security: Cookie is HTTP-only, not accessible via JavaScript`;
                     userId: document.getElementById('userId').value || 'emp12345',
                     userName: document.getElementById('userName').value || 'John Doe',
                     userEmail: document.getElementById('userEmail').value || 'john.doe@company.com',
-                    env: getCurrentEnvironment()
+                    env: getCurrentEnvironment(),
+                    country: document.getElementById('country').value || 'United States',
+                    recipientName: document.getElementById('recipientName').value || '',
+                    recipientEmail: document.getElementById('recipientEmail').value || '',
+                    recipientUsername: document.getElementById('recipientUsername').value || ''
                 };
                 
                 const tooltipText = `🔐 SECURE POST AUTHENTICATION (Developer Info)
@@ -756,7 +807,11 @@ Security: Token sent in request body (not URL!)`;
             userData = {
                 userId: document.getElementById('userId').value,
                 userName: document.getElementById('userName').value,
-                userEmail: document.getElementById('userEmail').value || `${document.getElementById('userId').value}@company.com`
+                userEmail: document.getElementById('userEmail').value || `${document.getElementById('userId').value}@company.com`,
+                country: document.getElementById('country').value || 'United States',
+                recipientName: document.getElementById('recipientName').value,
+                recipientEmail: document.getElementById('recipientEmail').value,
+                recipientUsername: document.getElementById('recipientUsername').value
             };
 
             // Store in localStorage
@@ -775,6 +830,20 @@ Security: Token sent in request body (not URL!)`;
                     userName: userData.userName,
                     userEmail: userData.userEmail
                 });
+                
+                // Add optional parameters if they exist
+                if (userData.country) {
+                    params.append('country', userData.country);
+                }
+                if (userData.recipientName) {
+                    params.append('recipientName', userData.recipientName);
+                }
+                if (userData.recipientEmail) {
+                    params.append('recipientEmail', userData.recipientEmail);
+                }
+                if (userData.recipientUsername) {
+                    params.append('recipientUsername', userData.recipientUsername);
+                }
                 
                 const userUrl = `${getGiftsAppUrl()}/?${params.toString()}`;
                 
@@ -820,7 +889,11 @@ Security: Token sent in request body (not URL!)`;
                         userId: userData.userId,
                         userName: userData.userName,
                         userEmail: userData.userEmail,
-                        env: currentEnv
+                        env: currentEnv,
+                        country: userData.country,
+                        recipientName: userData.recipientName,
+                        recipientEmail: userData.recipientEmail,
+                        recipientUsername: userData.recipientUsername
                     }),
                     credentials: 'include'
                 });
@@ -850,6 +923,20 @@ Security: Token sent in request body (not URL!)`;
                 userName: userData.userName,
                 userEmail: userData.userEmail
             });
+
+            // Add optional parameters if they exist
+            if (userData.country) {
+                params.append('country', userData.country);
+            }
+            if (userData.recipientName) {
+                params.append('recipientName', userData.recipientName);
+            }
+            if (userData.recipientEmail) {
+                params.append('recipientEmail', userData.recipientEmail);
+            }
+            if (userData.recipientUsername) {
+                params.append('recipientUsername', userData.recipientUsername);
+            }
 
             return `${getGiftsAppUrl()}/?${params.toString()}`;
         }
