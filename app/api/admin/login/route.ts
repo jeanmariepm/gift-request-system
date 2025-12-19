@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// CORS headers to allow cross-origin requests
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
+// Handle preflight OPTIONS request
+export async function OPTIONS(request: NextRequest) {
+  return NextResponse.json({}, { headers: corsHeaders })
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Extract Bearer token from Authorization header
@@ -7,7 +19,7 @@ export async function POST(request: NextRequest) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
         { error: 'Missing or invalid Authorization header' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       )
     }
     
@@ -26,7 +38,7 @@ export async function POST(request: NextRequest) {
       console.error('ADMIN_ACCESS_TOKEN not configured')
       return NextResponse.json(
         { error: 'Token not configured for this environment' },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       )
     }
     
@@ -34,7 +46,7 @@ export async function POST(request: NextRequest) {
       console.log('Token validation failed')
       return NextResponse.json(
         { error: 'Invalid admin token' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       )
     }
     
@@ -44,7 +56,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ 
       success: true,
       redirectUrl: '/admin/dashboard'
-    })
+    }, { headers: corsHeaders })
     
     response.cookies.set('admin_session', JSON.stringify({ authenticated: true }), {
       httpOnly: true,
@@ -60,7 +72,7 @@ export async function POST(request: NextRequest) {
     console.error('Admin login error:', error)
     return NextResponse.json(
       { error: 'Login failed' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 }

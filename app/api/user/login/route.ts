@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// CORS headers to allow cross-origin requests
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
+// Handle preflight OPTIONS request
+export async function OPTIONS(request: NextRequest) {
+  return NextResponse.json({}, { headers: corsHeaders })
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Extract Bearer token from Authorization header
@@ -7,7 +19,7 @@ export async function POST(request: NextRequest) {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
         { error: 'Missing or invalid Authorization header' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       )
     }
     
@@ -20,7 +32,7 @@ export async function POST(request: NextRequest) {
     if (!userId || !userName) {
       return NextResponse.json(
         { error: 'userId and userName are required' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       )
     }
     
@@ -37,7 +49,7 @@ export async function POST(request: NextRequest) {
       console.error('USER_ACCESS_TOKEN not configured')
       return NextResponse.json(
         { error: 'Token not configured for this environment' },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       )
     }
     
@@ -45,7 +57,7 @@ export async function POST(request: NextRequest) {
       console.log('Token validation failed')
       return NextResponse.json(
         { error: 'Invalid access token' },
-        { status: 401 }
+        { status: 401, headers: corsHeaders }
       )
     }
     
@@ -75,7 +87,7 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({ 
       success: true,
       redirectUrl: '/'
-    })
+    }, { headers: corsHeaders })
     
     response.cookies.set('user_session', JSON.stringify(sessionData), {
       httpOnly: true,
@@ -91,7 +103,7 @@ export async function POST(request: NextRequest) {
     console.error('User login error:', error)
     return NextResponse.json(
       { error: 'Login failed' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 }
