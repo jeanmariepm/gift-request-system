@@ -1,0 +1,10 @@
+services:
+  app:
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npx prisma db push && npm run dev"
+    ports:
+      - "3000:3000"

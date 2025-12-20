@@ -5,6 +5,8 @@ const nextConfig = {
     USER_ACCESS_TOKEN: process.env.USER_ACCESS_TOKEN,
     ADMIN_ACCESS_TOKEN: process.env.ADMIN_ACCESS_TOKEN,
   },
+  // Enable standalone output for Docker
+  output: 'standalone',
 }
 
 module.exports = nextConfig
