@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Logo from '../../components/Logo'
 
@@ -23,6 +23,7 @@ interface Submission {
 
 export default function AdminDashboardPage() {
   const router = useRouter()
+  const referrerUrl = useRef<string | null>(null)
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -33,6 +34,11 @@ export default function AdminDashboardPage() {
 
   // Fetch admin session on mount
   useEffect(() => {
+    // Capture the referrer URL on mount
+    if (document.referrer) {
+      referrerUrl.current = document.referrer
+    }
+    
     const fetchSession = async () => {
       try {
         // Small delay to ensure cookie is fully set after redirect
@@ -119,7 +125,11 @@ export default function AdminDashboardPage() {
   }
 
   const handleClose = () => {
-    window.location.href = 'https://jeanmariepm.github.io/gift-request-system/'
+    if (referrerUrl.current) {
+      window.location.href = referrerUrl.current
+    } else {
+      window.history.back()
+    }
   }
 
   const handleFilterClick = (status: 'all' | 'Pending' | 'Processed' | 'Cancelled') => {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Logo from './components/Logo'
 
@@ -29,6 +29,7 @@ interface SessionData {
 
 export default function FormPage() {
   const router = useRouter()
+  const referrerUrl = useRef<string | null>(null)
   
   // Session data from secure cookie
   const [session, setSession] = useState<SessionData | null>(null)
@@ -61,6 +62,11 @@ export default function FormPage() {
 
   // Fetch session data on mount
   useEffect(() => {
+    // Capture the referrer URL on mount
+    if (document.referrer) {
+      referrerUrl.current = document.referrer
+    }
+    
     const fetchSession = async () => {
       try {
         // Small delay to ensure cookie is fully set after redirect
@@ -458,7 +464,13 @@ export default function FormPage() {
               Create A Gift Request
             </button>
             <button 
-              onClick={() => window.location.href = 'https://jeanmariepm.github.io/gift-request-system/'}
+              onClick={() => {
+                if (referrerUrl.current) {
+                  window.location.href = referrerUrl.current
+                } else {
+                  window.history.back()
+                }
+              }}
               className="btn btn-secondary"
             >
               Close
