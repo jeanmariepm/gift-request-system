@@ -458,7 +458,7 @@ export default function FormPage() {
               Create A Gift Request
             </button>
             <button 
-              onClick={() => window.close()}
+              onClick={() => window.location.href = 'https://jeanmariepm.github.io/gift-request-system/'}
               className="btn btn-secondary"
             >
               Close

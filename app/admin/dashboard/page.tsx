@@ -119,7 +119,7 @@ export default function AdminDashboardPage() {
   }
 
   const handleClose = () => {
-    window.close()
+    window.location.href = 'https://jeanmariepm.github.io/gift-request-system/'
   }
 
   const handleFilterClick = (status: 'all' | 'Pending' | 'Processed' | 'Cancelled') => {
