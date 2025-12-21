@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createAdminToken } from '@/lib/auth'
 
 // CORS headers to allow cross-origin requests with credentials
 function getCorsHeaders(origin: string | null) {
@@ -59,13 +60,16 @@ export async function POST(request: NextRequest) {
     
     console.log('Token validation succeeded')
     
-    // Set HTTP-only cookie for admin session
+    // Create signed JWT token for admin
+    const jwtToken = createAdminToken()
+    
+    // Set HTTP-only cookie for admin session with JWT
     const response = NextResponse.json({ 
       success: true,
       redirectUrl: '/admin/dashboard'
     }, { headers: corsHeaders })
     
-    response.cookies.set('admin_session', JSON.stringify({ authenticated: true }), {
+    response.cookies.set('admin_session', jwtToken, {
       httpOnly: true,
       secure: true, // Always secure (required for SameSite=none)
       sameSite: 'none', // Allow cross-origin cookie usage

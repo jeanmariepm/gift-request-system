@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createUserToken } from '@/lib/auth'
 
 // CORS headers to allow cross-origin requests with credentials
 function getCorsHeaders(origin: string | null) {
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     
     console.log('Token validation succeeded')
     
-    // Build session data
+    // Build session data for JWT
     const readOnlyData: any = {}
     if (country) {
       readOnlyData.country = country
@@ -81,22 +82,24 @@ export async function POST(request: NextRequest) {
     if (recipientEmail) formPrefill.recipientEmail = recipientEmail
     if (recipientUsername) formPrefill.recipientUsername = recipientUsername
     
-    const sessionData = {
+    const finalUserEmail = userEmail || `${userId}@company.com`
+    
+    // Create signed JWT token
+    const jwtToken = createUserToken(
       userId,
       userName,
-      userEmail: userEmail || `${userId}@company.com`,
+      finalUserEmail,
       readOnlyData,
-      formPrefill: Object.keys(formPrefill).length > 0 ? formPrefill : undefined,
-      authenticated: true
-    }
+      Object.keys(formPrefill).length > 0 ? formPrefill : undefined
+    )
     
-    // Set HTTP-only cookie
+    // Set HTTP-only cookie with JWT
     const response = NextResponse.json({ 
       success: true,
       redirectUrl: '/'
     }, { headers: corsHeaders })
     
-    response.cookies.set('user_session', JSON.stringify(sessionData), {
+    response.cookies.set('user_session', jwtToken, {
       httpOnly: true,
       secure: true, // Always secure (required for SameSite=none)
       sameSite: 'none', // Allow cross-origin cookie usage

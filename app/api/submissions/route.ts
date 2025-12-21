@@ -1,14 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPrismaClient } from '@/lib/prisma'
 import { getDatabaseUrl } from '@/lib/db-selector'
+import { isUserAuthenticated } from '@/lib/auth'
+
+export const dynamic = 'force-dynamic'
 
 // GET - Fetch user's submissions
 export async function GET(request: NextRequest) {
+  // Validate user session
+  const userAuth = await isUserAuthenticated()
+  if (!userAuth.authenticated) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  
   const { searchParams } = new URL(request.url)
   const userId = searchParams.get('userId')
   
   if (!userId) {
     return NextResponse.json({ error: 'User ID is required' }, { status: 400 })
+  }
+  
+  // Verify user can only see their own submissions
+  if (userId !== userAuth.userId) {
+    return NextResponse.json({ error: 'Forbidden: You can only view your own submissions' }, { status: 403 })
   }
   
   try {
@@ -30,6 +44,12 @@ export async function GET(request: NextRequest) {
 
 // POST - Create new submission
 export async function POST(request: NextRequest) {
+  // Validate user session
+  const userAuth = await isUserAuthenticated()
+  if (!userAuth.authenticated) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  
   try {
     const body = await request.json()
     const { userId, userName, userEmail, giftType, recipientUsername, recipientName, recipientEmail, message, readOnlyData } = body
@@ -37,6 +57,11 @@ export async function POST(request: NextRequest) {
     // Validate required fields (recipientUsername is optional, recipientEmail is required)
     if (!userId || !userName || !giftType || !recipientName || !recipientEmail) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+    
+    // Verify user can only create submissions for themselves
+    if (userId !== userAuth.userId) {
+      return NextResponse.json({ error: 'Forbidden: You can only create submissions for yourself' }, { status: 403 })
     }
     
     // Validate message length
