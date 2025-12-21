@@ -858,8 +858,9 @@ Cookie is HTTP-only, not accessible via JavaScript`;
                 console.log('User auth response data:', data);
 
                 if (response.ok && data.success) {
-                    // Navigate to Gifts App in same tab
-                    window.location.href = `${getGiftsAppUrl()}${data.redirectUrl}`;
+                    // Navigate to Gifts App in same tab with returnUrl
+                    const returnUrl = encodeURIComponent(window.location.href);
+                    window.location.href = `${getGiftsAppUrl()}${data.redirectUrl}?returnUrl=${returnUrl}`;
                 } else {
                     alert(`Authentication failed: ${data.error || 'Unknown error'}`);
                 }

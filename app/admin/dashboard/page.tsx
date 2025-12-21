@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Logo from '../../components/Logo'
 
@@ -23,7 +23,6 @@ interface Submission {
 
 export default function AdminDashboardPage() {
   const router = useRouter()
-  const referrerUrl = useRef<string | null>(null)
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -34,11 +33,6 @@ export default function AdminDashboardPage() {
 
   // Fetch admin session on mount
   useEffect(() => {
-    // Capture the referrer URL on mount
-    if (document.referrer) {
-      referrerUrl.current = document.referrer
-    }
-    
     const fetchSession = async () => {
       try {
         // Small delay to ensure cookie is fully set after redirect
@@ -124,14 +118,6 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const handleClose = () => {
-    if (referrerUrl.current) {
-      window.location.href = referrerUrl.current
-    } else {
-      window.history.back()
-    }
-  }
-
   const handleFilterClick = (status: 'all' | 'Pending' | 'Processed' | 'Cancelled') => {
     setFilterStatus(status)
   }
@@ -171,15 +157,7 @@ export default function AdminDashboardPage() {
     <div className="container">
       <Logo />
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 className="page-title" style={{ margin: 0 }}>Admin Dashboard</h1>
-        <button 
-          onClick={handleClose}
-          className="btn btn-secondary"
-        >
-          Close
-        </button>
-      </div>
+      <h1 className="page-title">Admin Dashboard</h1>
       
       <div className="card">
         {/* Clickable Stats Cards for Filtering */}
