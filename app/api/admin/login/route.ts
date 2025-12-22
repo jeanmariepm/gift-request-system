@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminToken } from '@/lib/auth'
+import { createAdminLoginToken } from '@/lib/login-tokens'
 
 // CORS headers to allow cross-origin requests with credentials
 function getCorsHeaders(origin: string | null) {
@@ -60,24 +60,14 @@ export async function POST(request: NextRequest) {
     
     console.log('Token validation succeeded')
     
-    // Create signed JWT token for admin
-    const jwtToken = createAdminToken()
+    // Create a temporary login token for server-to-server authentication
+    const loginToken = createAdminLoginToken()
     
-    // Set HTTP-only cookie for admin session with JWT
-    const response = NextResponse.json({ 
+    return NextResponse.json({ 
       success: true,
-      redirectUrl: '/admin/dashboard'
+      loginToken,
+      redirectUrl: `/api/exchange-token?loginToken=${loginToken}`
     }, { headers: corsHeaders })
-    
-    response.cookies.set('admin_session', jwtToken, {
-      httpOnly: true,
-      secure: true, // Always secure (required for SameSite=none)
-      sameSite: 'none', // Allow cross-origin cookie usage
-      maxAge: 60 * 60 * 8, // 8 hours
-      path: '/'
-    })
-    
-    return response
     
   } catch (error) {
     console.error('Admin login error:', error)

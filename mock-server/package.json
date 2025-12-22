@@ -1,0 +1,19 @@
+{
+  "name": "gifts-app-mock-server",
+  "version": "1.0.0",
+  "description": "Standalone mock server for testing Gifts App integration with server-to-server authentication",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["gifts", "mock", "testing"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
+    "node-fetch": "^2.7.0"
+  }
+}
+

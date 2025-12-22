@@ -4,6 +4,9 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Gift Requests',
   description: 'Submit and track gift requests',
+  icons: {
+    icon: '/into-logo.svg',
+  },
 }
 
 export default function RootLayout({

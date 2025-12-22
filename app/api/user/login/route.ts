@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createUserToken } from '@/lib/auth'
+import { createUserLoginToken } from '@/lib/login-tokens'
 
 // CORS headers to allow cross-origin requests with credentials
 function getCorsHeaders(origin: string | null) {
@@ -84,30 +84,20 @@ export async function POST(request: NextRequest) {
     
     const finalUserEmail = userEmail || `${userId}@company.com`
     
-    // Create signed JWT token
-    const jwtToken = createUserToken(
+    // Create a temporary login token for server-to-server authentication
+    const loginToken = createUserLoginToken({
       userId,
       userName,
-      finalUserEmail,
+      userEmail: finalUserEmail,
       readOnlyData,
-      Object.keys(formPrefill).length > 0 ? formPrefill : undefined
-    )
-    
-    // Set HTTP-only cookie with JWT
-    const response = NextResponse.json({ 
-      success: true,
-      redirectUrl: '/'
-    }, { headers: corsHeaders })
-    
-    response.cookies.set('user_session', jwtToken, {
-      httpOnly: true,
-      secure: true, // Always secure (required for SameSite=none)
-      sameSite: 'none', // Allow cross-origin cookie usage
-      maxAge: 60 * 60 * 8, // 8 hours
-      path: '/'
+      formPrefill: Object.keys(formPrefill).length > 0 ? formPrefill : undefined
     })
     
-    return response
+    return NextResponse.json({ 
+      success: true,
+      loginToken,
+      redirectUrl: `/api/exchange-token?loginToken=${loginToken}`
+    }, { headers: corsHeaders })
     
   } catch (error) {
     console.error('User login error:', error)
