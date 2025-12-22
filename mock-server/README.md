@@ -2,6 +2,15 @@
 
 A **standalone, secure mock server** for testing the Gifts App with **server-to-server authentication**. This mock server keeps Bearer tokens on the server-side, never exposing them to the browser.
 
+## 🌐 Deployed Version
+
+**Live URL:** https://gifts-mock-server.vercel.app
+
+The mock server is deployed as a separate Vercel app and is ready to use for testing against:
+- Local Gifts App (localhost:3000)
+- Development Gifts App (Vercel Preview)
+- Production Gifts App (Vercel Production)
+
 ## 🔒 Security Features
 
 - ✅ **Bearer tokens stored on server** - Never sent to browser
