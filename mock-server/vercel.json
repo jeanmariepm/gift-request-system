@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "name": "gifts-mock-server",
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/server.js"
+    }
+  ],
+  "env": {
+    "PORT": "3000",
+    "GIFTS_APP_LOCAL_URL": "http://localhost:3000",
+    "GIFTS_APP_DEV_URL": "https://instant-jmariada-2544-jeanmarie-mariadassous-projects.vercel.app",
+    "GIFTS_APP_PROD_URL": "https://instant-sigma-drab.vercel.app"
+  }
+}
+

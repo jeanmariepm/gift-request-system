@@ -1,27 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { isUserAuthenticated } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const userSession = cookieStore.get('user_session')
+    const userAuth = await isUserAuthenticated()
 
-    if (!userSession) {
+    if (!userAuth.authenticated) {
       return NextResponse.json({ error: 'No session found' }, { status: 401 })
     }
 
-    const sessionData = JSON.parse(userSession.value)
-    
+    // Return the JWT decoded session data (no env parameter anymore)
     return NextResponse.json({
-      userId: sessionData.userId,
-      userName: sessionData.userName,
-      userEmail: sessionData.userEmail,
-      env: sessionData.env,
-      readOnlyData: sessionData.readOnlyData || {},
-      formPrefill: sessionData.formPrefill || {},
-      authenticated: sessionData.authenticated
+      userId: userAuth.userId,
+      userName: userAuth.userName,
+      userEmail: userAuth.userEmail,
+      authenticated: userAuth.authenticated
     })
   } catch (error) {
     console.error('Error reading session:', error)

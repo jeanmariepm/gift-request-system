@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createUserLoginToken } from '@/lib/login-tokens'
 
 // CORS headers to allow cross-origin requests with credentials
 function getCorsHeaders(origin: string | null) {
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
     
     console.log('Token validation succeeded')
     
-    // Build session data
+    // Build session data for JWT
     const readOnlyData: any = {}
     if (country) {
       readOnlyData.country = country
@@ -81,30 +82,22 @@ export async function POST(request: NextRequest) {
     if (recipientEmail) formPrefill.recipientEmail = recipientEmail
     if (recipientUsername) formPrefill.recipientUsername = recipientUsername
     
-    const sessionData = {
+    const finalUserEmail = userEmail || `${userId}@company.com`
+    
+    // Create a temporary login token for server-to-server authentication
+    const loginToken = createUserLoginToken({
       userId,
       userName,
-      userEmail: userEmail || `${userId}@company.com`,
+      userEmail: finalUserEmail,
       readOnlyData,
-      formPrefill: Object.keys(formPrefill).length > 0 ? formPrefill : undefined,
-      authenticated: true
-    }
-    
-    // Set HTTP-only cookie
-    const response = NextResponse.json({ 
-      success: true,
-      redirectUrl: '/'
-    }, { headers: corsHeaders })
-    
-    response.cookies.set('user_session', JSON.stringify(sessionData), {
-      httpOnly: true,
-      secure: true, // Always secure (required for SameSite=none)
-      sameSite: 'none', // Allow cross-origin cookie usage
-      maxAge: 60 * 60 * 8, // 8 hours
-      path: '/'
+      formPrefill: Object.keys(formPrefill).length > 0 ? formPrefill : undefined
     })
     
-    return response
+    return NextResponse.json({ 
+      success: true,
+      loginToken,
+      redirectUrl: `/api/exchange-token?loginToken=${loginToken}`
+    }, { headers: corsHeaders })
     
   } catch (error) {
     console.error('User login error:', error)

@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPrismaClient } from '@/lib/prisma'
 import { getDatabaseUrl } from '@/lib/db-selector'
+import { isUserAuthenticated } from '@/lib/auth'
+
+export const dynamic = 'force-dynamic'
 
 // PUT - Update a submission (for user edits of pending items)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  // Validate user session
+  const userAuth = await isUserAuthenticated()
+  if (!userAuth.authenticated) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  
   try {
     const body = await request.json()
     const { giftType, recipientUsername, recipientName, recipientEmail, message } = body
-    const { id } = params
+    const { id } = await params
     
     // Validate required fields
     if (!giftType || !recipientName || !recipientEmail) {
@@ -33,6 +42,11 @@ export async function PUT(
     
     if (!existingSubmission) {
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 })
+    }
+    
+    // Verify user owns this submission
+    if (existingSubmission.userId !== userAuth.userId) {
+      return NextResponse.json({ error: 'Forbidden: You can only edit your own submissions' }, { status: 403 })
     }
     
     if (existingSubmission.status !== 'Pending') {
@@ -62,10 +76,16 @@ export async function PUT(
 // DELETE - Delete a submission (only pending items can be deleted)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  // Validate user session
+  const userAuth = await isUserAuthenticated()
+  if (!userAuth.authenticated) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  
   try {
-    const { id } = params
+    const { id } = await params
     
     // Get database URL (configured per Vercel environment)
     const dbUrl = getDatabaseUrl()
@@ -78,6 +98,11 @@ export async function DELETE(
     
     if (!existingSubmission) {
       return NextResponse.json({ error: 'Submission not found' }, { status: 404 })
+    }
+    
+    // Verify user owns this submission
+    if (existingSubmission.userId !== userAuth.userId) {
+      return NextResponse.json({ error: 'Forbidden: You can only delete your own submissions' }, { status: 403 })
     }
     
     if (existingSubmission.status !== 'Pending') {

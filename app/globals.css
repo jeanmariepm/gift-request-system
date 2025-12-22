@@ -34,6 +34,7 @@ a {
 
 .logo img {
   height: 50px;
+  width: auto;
 }
 
 .page-title {

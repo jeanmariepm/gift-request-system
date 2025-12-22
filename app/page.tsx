@@ -457,12 +457,6 @@ export default function FormPage() {
             >
               Create A Gift Request
             </button>
-            <button 
-              onClick={() => window.close()}
-              className="btn btn-secondary"
-            >
-              Close
-            </button>
           </div>
         </div>
 
